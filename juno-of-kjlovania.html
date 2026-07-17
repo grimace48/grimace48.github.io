@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Juno's Journal — A Kjlovania Adventure Story</title>
+<link rel="icon" href="data:," />
+
+<!-- React + ReactDOM -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+<!-- Babel: lets the browser understand the JSX below without a build step -->
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<!-- Tailwind (utility classes used throughout the component) -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  html, body { margin: 0; padding: 0; background: #0e0b08; }
+  #root { min-height: 100vh; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+const { useState, useRef, useEffect } = React;
+
+
+// ---------- HELPERS ----------
+function resolve(val, path) {
+  return typeof val === "function" ? val(path) : val;
+}
+
+// ---------- STORY DATA ----------
+// Each scene: title, entries (paragraphs, or fn(path)=>paragraphs), choices
+// (array, or fn(path)=>array). Each choice: label, flag (merged into path),
+// next (sceneId, or fn(path)=>sceneId), reaction (string, or fn(path)=>string).
+
+const SCENES = {
+  s1: {
+    title: "Chapter 1 — Seven Lashings",
+    dateline: "April 1737",
+    entries: [
+      "His shadow loomed over me as I scrubbed the monastery floor on my hands and knees. The smell of waxed oak was overpowered by soap and spilled wine. A leather strap came down against my back with a loud crack. Already, bruises and scars had formed on my back, and this holy priest of the Crimson Sun intended to add another layer.",
+      "Destiny shifts with every choice.",
+    ],
+    choices: [
+      {
+        label: "Remain a rock. Strong, calm, and unyielding. Give him nothing.",
+        flag: { s1: "stone" },
+        next: "s2",
+        reaction:
+          "I did not cry out. I would not give him that coin to spend. I let my jaw lock and my eyes go flat as river stone, and somewhere in that silence I found the first shape of the woman I'd become — the one who does not break where others can see.",
+      },
+      {
+        label:
+          "Fight fire with fire. Scream. Make your pain echo in the back of his mind for nights to come. Give him doubts.",
+        flag: { s1: "fire" },
+        next: "s2",
+        reaction:
+          "I screamed. I clawed. I looked him dead in the eye and let him see that I would remember every second of this, that I would carry it forward like a blade with his name etched into the steel. If I was going to hurt, he was going to lie awake wondering when I'd come to collect.",
+      },
+    ],
+  },
+
+  s2: {
+    title: "Chapter 2 — Zinnia",
+    entries: [
+      "We'd dreamed about leaving for years — the two of us, whispering it into the dark of the stable where it was safe to want things out loud. Zinnia was the one who kept the dream alive when I wanted to let it die. She had a way of collecting hope like other children collected pebbles, and she never seemed to run out. She was the smart one, optimistic, and compassionate. The world was darker in my eyes.",
+      "The church called us wards. Called it discipline when they beat us, called themselves our betters. What we were, plainly, were two girls whose parents had vanished somewhere in the years before memory, left in the keeping of people who found God easier to preach than to practice.",
+      "Zinnia delicately looked under the bandage on her arm. The skin was raw and pink yet healing. \"We will get out of here, Zee,\" I said decisively.\n\"When and how?\" she asked.",
+    ],
+    choices: [
+      {
+        label:
+          "Run tonight. We have nothing but each other — that has to be enough. No more beatings. No drunken clergy.",
+        flag: { escape: "night", path: "withermarsh" },
+        next: "s4_2",
+        reactionTitle: "Chapter 2-1 — Run Together",
+        reaction: [
+          "We went east. The road was hard. Zinnia came down with a fever she could not shake.",
+          "We finally made it to a town called Withermarsh, but it wasn't enough. It was too late for their backwoods medicine.",
+          "Zinnia died as I knelt beside her bed.",
+        ],
+      },
+      {
+        label: "Wait. Plan it. Rations, the horses, a real chance at the road.",
+        flag: { escape: "planned" },
+        next: "s3",
+        skipReaction: true,
+      },
+    ],
+  },
+
+  s3: {
+    title: "Chapter 3 — A Flower Falls",
+    entries: [
+      "For weeks, Zinnia and I stole our freedom one handful at a time.",
+      "A loaf of bread tucked beneath a cloak. A waterskin hidden beneath fresh hay. A blanket, a flint, a knife that had long since lost its edge. Every day we carried a little more to the stable until we had enough to survive. Every day we also battered the front door's lock against the frame as we came and went, pretending clumsiness until the mechanism finally refused to catch. They would repair it eventually, but not quickly. The clergy never hurried unless it meant forcing children to work.",
+      "Two nights later, the wine flowed as it always did.",
+      "Their laughter echoed through the house until it dissolved into drunken slurs and finally silence.",
+      "This was our chance.",
+      "I eased my bedroom door open and found Zinnia already waiting. We exchanged one nervous glance before slipping into the hallway. Every board beneath my feet felt loud enough to wake the dead, yet somehow the priests continued snoring.",
+      "I reached the staircase and started down, one careful step at a time.",
+      "Something made me look back.",
+      "Zinnia wasn't behind me.",
+      "She stood frozen at the top of the stairs.",
+      "Elder Jensen had appeared from the darkness.",
+      "One filthy arm wrapped around her waist while the other crushed her wrist. Even through the dim candlelight I could see the panic on her face. His bloodshot eyes gleamed with drunken delight, as if terror itself amused him.",
+      "\"No!\" I whispered, barely able to breathe.",
+      "She struggled.",
+      "He laughed.",
+      "His grip tightened until she gasped in pain. He dragged her toward the railing while she clawed desperately at his sleeve.",
+      "I ran.",
+      "Before I could reach them...",
+      "...he shoved her.",
+      "Time stopped.",
+      "Zinnia caught the wooden railing with both hands.",
+      "For one impossible heartbeat I thought she'd hold.",
+      "The old wood cracked.",
+      "The spindle splintered apart.",
+      "She fell.",
+      "Head first.",
+      "The sound her body made against the stone floor was worse than any scream.",
+      "A sickening crack.",
+      "Then...",
+      "Nothing.",
+      "I threw myself beside her.",
+      "\"Zinnia!\"",
+      "I grabbed her shoulders, my hands shaking so violently I could barely hold her. Her eyes stared past me, empty. Her neck bent at an angle no living person could survive.",
+      "\"Please...\" I muttered.",
+      "There was no breath. No heartbeat. Only silence.",
+      "The world seemed to disappear around me. I couldn't hear the snoring priests. I couldn't hear my own sobs. I could only see my little sister lying broken in my arms, the only person who had ever truly been mine.",
+      "The promise we'd whispered to each other every night...",
+      "We'll leave together.",
+      "I had failed her.",
+    ],
+    choices: [
+      {
+        label: "Kill them all. Burn it down. Leave nothing behind.",
+        flag: { s3: "burn" },
+        next: "s4",
+        reactionTitle: "Chapter 3-1 — Blood and Fire",
+        reaction: (path) => [
+          "Something inside me died beside her. The grief vanished so completely it frightened me. In its place came something cold.",
+          "I slowly laid Zinnia's body on the floor and kissed her forehead one last time.",
+          "\"I love you, Zee,\" I whispered.",
+          "Then I stood.",
+          "The shattered railing lay scattered across the landing above me. One thick, jagged spindle rested among the splinters, stained with fresh blood where it had snapped free.",
+          "I picked it up. It fit perfectly in my hand.",
+          "Elder Jensen was still standing there. Still smiling. He opened his mouth, no doubt to spit another insult. I never heard the words. The spindle crashed into his skull with a crack that echoed through the hall. He stumbled backward.",
+          "I hit him again.",
+          "And again.",
+          "And again.",
+          "His smirk disappeared beneath blood.",
+          "Even after he collapsed, I kept swinging until I was certain he would never touch another child again.",
+          "My breathing slowed.",
+          "One more.",
+          "There was still one monster left.",
+          "The High Priest.",
+          "I walked to his chamber at the end of the hallway and kicked the door open so hard it slammed against the wall.",
+          "He blinked awake in confusion.",
+          "Before he could speak, I drove the wooden club between his legs.",
+          "His scream filled the room.",
+          "Good.",
+          "I wanted him awake.",
+          "I wanted him to see me.",
+          "To know exactly who had come for him.",
+          "\"See me,\" I ordered, my voice strangely calm.",
+          "The response never came.",
+          "The first blow broke his jaw.",
+          "The second shattered his temple.",
+          "By the time I stopped, blood covered the walls, the bed, and my arms to the elbows.",
+          "Justice had finally found him.",
+          "The house behind me erupted into frightened voices as the others began waking.",
+          "I walked through them without running.",
+          "Without hiding.",
+          "Their horrified faces barely registered.",
+          "At the front hall, I pulled a burning sconce from the wall and tossed it onto the dry wooden floor. Flames crawled greedily across the rugs.",
+          "Then I stepped into the cold night.",
+          "The stable waited exactly where we'd planned.",
+          "Our supplies.",
+          "My pack.",
+          "Zinnia's pack.",
+          "I hesitated only a second and fastened them both to the saddle.",
+          "In the darkness, I mounted the horse and dug in my heels.",
+          "As the clergy house disappeared behind me, orange flames climbed into the night sky.",
+          path.s1 === "fire"
+            ? "Tears streamed down my face as I looked back at the flames and Zinnia's grave."
+            : "I never looked back.",
+        ],
+      },
+      {
+        label: "Give Zinnia the burial she deserves. No one else will.",
+        flag: { s3: "bury" },
+        next: "end_stuck_forever",
+        reactionTitle: "Chapter 3-2 — Burial",
+        reaction: [
+          "I couldn't leave her there. They would discard her body like trash and pretend she never existed. I dug through what remained of the night by lantern light, my hands raw, and laid her to rest in the earth at dawn. I chiseled a 'Z' in a marker, then the tears came flooding, and I collapsed in exhaustion.",
+          "I woke up in chains.",
+          "They beat me.",
+          "Whipped me.",
+          "Starved me.",
+          "Time escaped me. I don't know if it was days, weeks, or months before they let me out, but after that, I never tried to escape again.",
+        ],
+      },
+      {
+        label: "Don't make things worse. Stay calm and take the chance to escape. Run. Now.",
+        flag: { s3: "flee" },
+        next: "s4",
+        reaction:
+          "I made myself remember what she would have wanted, and it wasn't fire, and it wasn't another body added to that house. I gathered our packs, mounted the horse, and rode into the dark without looking back — no vengeance taken tonight, only grief, carried forward the only way I could carry it.",
+      },
+    ],
+  },
+
+  s4: {
+    title: "Chapter 4 — A Fork in the Road",
+    entries: [
+      "The road splits east of the old boundary stones, and I stood there longer than I'll admit, like the ground itself owed me an answer.",
+      "West led to Voxborough — a city stacked on itself, gang-ruled and hungry, big enough that a girl with nothing could fade into it and come out someone else entirely. The other led east, toward Withermarsh. It was the way of quiet and shadow, hidden in the unknown. The kind where no one asks your name because no one plans on remembering it.",
+    ],
+    choices: [
+      {
+        label: "Voxborough, the city in the west. Rebuild from nothing.",
+        flag: { path: "voxborough" },
+        next: "s5",
+        reaction:
+          "I turned toward the noise and the smoke and the promise that a new name could mean a new person underneath it.",
+      },
+      {
+        label: "East, toward Withermarsh, in shadow.",
+        flag: { path: "withermarsh" },
+        next: "s4_2",
+        reaction:
+          "I turned east instead, toward the quiet, toward whatever waited for me in Withermarsh.",
+      },
+    ],
+  },
+
+  s4_2: {
+    title: "Chapter 4-2 — Mercenary",
+    entries: [
+      "Withermarsh was a town as muddy and unkept as its name implies, forever teetering on the edge of existence, barely more than a trading post in the rural wild of Kjlovania.",
+      "I met old Rewin at the Hollow Hearth tavern, where I worked to clean the tables, something all too familiar, but this time for coin and a bed of my own. It wasn't much, but it was freedom.",
+      "One day Captain Elias Vayne strolled in looking to band together mercenaries to protect the trade routes to Braxia. His face was hardened with age and scarred from many battles, he had short silver hair and a kept beard. He spoke in a deep dry voice. Withermarsh needed a change. I knew I needed this. I put down the mop and Elias gave me a heavy stone hammer with a worn wooden handle.",
+      "For years I took jobs with Elias and what other work I could find. I traveled the trade routes, but kept my guard up. No one outside Withermarsh ever learned my name.",
+      "That was until March 1749, when a new group of faces showed up in Withermarsh. There were seven strange men. Outsiders, but not the usual riff raff.",
+      "They were an impossible collection of misfits, a band of seven strangers thrown together by fate on the muddy trails of Kjlovania and invited here by Elias. There was Dion, the boisterous barbarian whose accordion skills were matched only by his penchant for dramatic declarations; Sir Saberic, a battle-hardened paladin clinging to his faith despite the scars on his soul; and Lief, a wiry, cynical rogue who navigated the shadows as easily as he navigated his own mistrust. Beside them stood Gabriel, a half-elf warlock whose delicate, otherworldly appearance belied his unnerving visions; Jaksyn, the tiefling bard whose flash and fiddle masked a dark and desperate past; and Dorian, the methodical artificer who examined the world through the runic magic etched into his own prosthetic arm. Finally there was Cassian, the haunted dhampir ranger, whose black hood hid the red-tinged eyes and the bloodlust he struggled to suppress.",
+      "As Elias was introducing himself to them, the barbarian, Dion, with his long flowing hair and bare chest puffed out, kept looking over at me with a big smile. Elias stopped mid-sentence, annoyed at the interruption, and said to Dion, \"That's Juno. She's with us.\"",
+      "\"And she's not interested,\" I added before he could say something dumber than his smile. His huge chest visually deflated at that.",
+      "Elias sent them off to investigate some rumors.",
+    ],
+    choices: [
+      {
+        label: "Continue...",
+        flag: {},
+        next: "s9_2",
+        skipReaction: true,
+      },
+    ],
+  },
+
+  s5: {
+    title: "Chapter 5 — Turf War",
+    entries: [
+      "Voxborough didn't care what I'd survived before it — only what I could survive now. In my years there gangs amassed power, splintered, and repeated an endless cycle of violence. I made a name the only way the city understood: with my fists, and later, with steel.",
+      "The trouble that mattered started over a girl — Camila, an artsy girl with big gorgeous eyes, purple-streaked hair, and a mouth that got her into trouble. She was in the wrong place at the wrong time. I came upon her and a gang collecting a debt she'd never actually owed.",
+    ],
+    choices: [
+      {
+        label: "Save the girl, and make sure she gets home safe. She's cute...",
+        flag: { s5: "romance" },
+        next: "s6",
+        reactionTitle: "Chapter 5-1 — Color",
+        reaction:
+          "I did not walk away once the danger passed. I walked her home. She smiled at me, and I felt something again. Camila saw color in a city that had none left for me, and so I stayed with her that night. She was captivating, wild, and whimsical. For a while I let myself believe I could hold both lives — the fighting and the softness — in the same two hands. Some nights I would show up at her doorstep bruised up, and she would take me in. I remember our legs entangled and glowing under the morning sun as it peeked over the walls of the city.",
+      },
+      {
+        label: "Do what's right. Fight off the thugs, but don't get attached.",
+        flag: { s5: "detached" },
+        next: "s6",
+        reactionTitle: "Chapter 5-2",
+        reaction:
+          "I got her clear and made sure the debt collectors understood the cost of trying twice. She thanked me with real warmth in her eyes. I nodded, turned, and didn't look back. Attachment was a door I'd already decided to keep bolted. Now I need to prepare for retaliation in greater numbers. More violence. It was a language I understood, and I was getting damn good at it too. On certain streets, my sight meant safety. On others, people feared me.",
+      },
+      {
+        label: "Move along. She's not your problem.",
+        flag: { s5: "notmyproblem" },
+        next: "s6",
+        reactionTitle: "Chapter 5-3 — Walk Away",
+        reaction:
+          "I told myself the city was full of girls in trouble and I couldn't save every one, so I wouldn't start with this one. I walked past. She was on the wrong street. It was their turf. If I intervened now, there would be retaliation later. It was the smart decision. Self preservation.",
+      },
+    ],
+  },
+
+  s6: {
+    title: "Chapter 6 — The Raven or The Light",
+    entries: [
+      "I felt something building inside of me. I could not describe it in words until one night a dream came. It felt vivid, brightness glaring from one side, and I could see through the darkness on the other. My mind felt fully awake. I stood at a crossroads of three paths.",
+      "The Raven Queen, made of dark feathers and darker patience, stood on the left side of a field gone to ash. From the old monastery books, I remembered her power. She had overthrown the god of death before her. She became a goddess of death and memories.",
+      "In the center, the path was simple and straight. Just me and the road.",
+      "On the right, a horse in white and gold armor, so radiant it strained my eyes, waited with a patience that felt like judgment. Lathander, god of the light. Bringer of dawn.",
+      "In the silence I understood, somehow, that whichever way I followed would bind my soul and my destiny.",
+    ],
+    choices: (path) => {
+      const opts = [
+        {
+          label: "Kneel to the Raven Queen. Swear the Oath of Vengeance. Plan to take down the corrupt patriarchy.",
+          flag: { oath: "vengeance" },
+          next: "s7",
+          reaction:
+            "I knelt in the ash, not the gold. She did not thank me. She simply marked me, and I understood my hammer had a name now, and a debt to start collecting. Vengeance, I called it. It felt more honest than any prayer I was ever forced to recite as a child.",
+        },
+      ];
+
+      const tooPassionate = path.s1 === "fire" && path.s5 === "romance";
+      if (!tooPassionate) {
+        opts.push({
+          label: "Kneel to no one. Trust yourself.",
+          flag: { oath: "none" },
+          next: "s7",
+          reaction:
+            "I stood between them and told them both the same thing: I didn't need a god to tell me who deserved to bleed. The Raven Queen's eyes narrowed like she respected it. The white horse simply turned away. I woke up alone, and for once that felt like the truer arrangement.",
+        });
+      }
+
+      const tooDark = path.s3 === "burn" && path.s5 === "notmyproblem";
+      if (!tooDark) {
+        opts.push({
+          label: "Kneel to Lathander. Swear devotion to the light. Protect the weak and innocent.",
+          flag: { oath: "devotion" },
+          next: "s7",
+          reaction:
+            "I knelt in the gold instead of the ash. It surprised me more than anyone. I swore to be a shield instead of only a blade — to protect the weak instead of avenging them after the fact. The Raven Queen watched me choose the dawn, and did not look away either.",
+        });
+      }
+
+      return opts;
+    },
+  },
+
+  s7: {
+    title: "Chapter 7 — The Call",
+    dateline: "March 2nd, 1749",
+    entries: [
+      "Work found me the way it always did — small, ugly, and someone else's tragedy. I returned a stolen daughter to a mother who had nothing to pay me with but two nights' rest and a warm meal, and I took it gladly enough.",
+      "In the tavern after, old Rewin talked my ear off about a church calling itself the Crimson Sun, spreading its particular rot into Withermarsh. I'd heard of them before — heard enough to know they deserved the same reckoning I'd already given one church. Rewin introduced me to a man named Elias, who said he was headed that way himself.",
+    ],
+    choices: (path) => {
+      const opts = [
+        {
+          label: "Follow the rumor to Withermarsh.",
+          flag: { s7: "withermarsh_call" },
+          next: "s8",
+          reaction:
+            "I told Elias I'd ride with him. Whatever the Crimson Sun was building in Withermarsh, I intended to be the thing that knocked it back down.",
+        },
+      ];
+      if (path.path === "voxborough" && path.s5 === "romance") {
+        opts.push({
+          label: "Stay. Choose Camila and the life you've built.",
+          flag: { s7: "stayed_love" },
+          next: "end_xavier_love",
+          reaction:
+            "I chose her instead of the rumor. For a while, it was the best decision I ever made.",
+        });
+      }
+      if (path.oath === "none") {
+        opts.push({
+          label: "Stay. Rule these streets instead.",
+          flag: { s7: "stayed_leader" },
+          next: "end_xavier_leader",
+          reaction:
+            "I chose the city over the road. Within a year, half of Voxborough answered to me, and for a while, that felt like enough.",
+        });
+      }
+      return opts;
+    },
+  },
+
+  s8: {
+    title: "Chapter 8 — Heaven and Horror",
+    entries: (path) => {
+      const hammerName = path.oath === "devotion" ? "Justice" : path.oath === "vengeance" ? "Vengeance" : null;
+      return [
+        "The smell of damp earth and rotting leaves hung thick in the night air as I crouched beneath the trees, watching the crumbling hovel through a cracked window.",
+        "Inside, half a dozen cultists stood in a circle around a man tied to a wooden post. Flames licked at his bare feet while torches painted the walls in flickering orange light. They chanted in low, rhythmic voices. I couldn't understand the words, but I didn't need to.",
+        "I'd seen enough sacrifices to know one when I saw it.",
+        "The Church of the Crimson Sun had grown bolder with every passing month. Under Bishop Glavius, their corruption spread like a plague, swallowing villages before anyone found the courage to stand against them. Withermarsh was next.",
+        "Not if I could help it.",
+        "I tightened my grip on my shield and waited for the right moment.",
+        "Then I heard voices.",
+        "Boots crunched along the path to my right.",
+        "I glanced over my shoulder and counted seven men shambling toward the hovel.",
+        "Perfect.",
+        "Seven oafs stomping through the woods with all the subtlety of a drunken bear.",
+        "Did they even know each other?",
+        "I slipped farther left through the brush, hoping to keep my advantage before they blundered into the ritual and ruined everything.",
+        "No more waiting.",
+        "I burst through a collapsed section of the wall before anyone else could announce our arrival.",
+        "Two cultists turned toward me.",
+        "Too slow.",
+        "I seized them by the backs of their heads and slammed their skulls together. The crack echoed through the room, and both bodies collapsed into a heap before they even understood what had happened.",
+        hammerName
+          ? `My hammer, ${hammerName}, found my right hand. My wooden shield settled comfortably on my left arm.`
+          : "My hammer found my right hand. My wooden shield settled comfortably on my left arm.",
+        "Finally.",
+        "A real fight.",
+        "The seven strangers poured in from the opposite side of the hovel. Several still wore the crimson robes of the church with weapons hidden beneath them.",
+        "Whoever thought those disguises would fool anyone deserved a harder hit than I was willing to give.",
+        "Oddly enough, the cultists barely acknowledged us.",
+        "The elder leading the ritual never broke his chant. The others continued repeating his words as if we weren't cutting them down around them. The victim hung limp in the center, barely conscious, mumbling to himself.",
+        "One of the newcomers threw off his crimson robe.",
+        "He was enormous.",
+        "Long brown hair flowed over broad shoulders wrapped in furs, leaving his muscular chest completely bare. An accordion hung across his back, and a club nearly as large as I was rested in one hand.",
+        "He looked at me.",
+        "Then...",
+        "He dropped to one knee.",
+        "\"Oh! What beauty has come from dark wilderness! THE HEAVENS! She take my heart!\"",
+        "I stared at him.",
+        "Behind him, a few of the others burst into laughter.",
+        "I blew a loose strand of ruby-red hair out of my face.",
+        "What kind of man declares his love in the middle of a fight?",
+        "Apparently this one.",
+        "The battle raged on around us.",
+        "Knives flew.",
+        "Most missed.",
+        "Someone started hurling pebbles.",
+        "Those missed too.",
+        "A towering knight in full plate bearing a shield emblazoned with the Crimson Sun pushed through the melee. His long peppered-gray hair framed a face carved by years of battle. Instead of attacking, he placed both hands on the bound victim.",
+        "Golden light poured from his palms, keeping the poor man alive while the ritual continued.",
+        "Interesting.",
+        "The rest of us cut through the remaining cultists one by one.",
+        "The bare-chested lunatic finally reached the old priest leading the ritual.",
+        "With a roar, he brought his club crashing down.",
+        "The cultist folded to the floor like an accordion of snapping bones.",
+        "Silence.",
+        "The chanting stopped.",
+        "The ritual was over.",
+        "The giant barbarian grinned and marched straight toward me.",
+        "\"I'm Dion Dreadbell,\" he said proudly. Then his grin widened. \"My heart beats like a thousand war drums for you.\"",
+        "I looked down at Vengeance, then back at him.",
+        "\"I like you less than my hammer does,\" I said. \"And it hates you.\"",
+        "That finally earned a few laughs.",
+        "As everyone caught their breath, introductions became slightly less ridiculous.",
+        "It turned out Captain Elias Vayne and old Rewin had sent all of us here separately to investigate the disappearances and the midnight rituals.",
+        "So we were on the same side.",
+        "That didn't mean I trusted them.",
+        "Judging by the sideways glances passing between the others, they didn't entirely trust each other either.",
+        "They hadn't been together very long.",
+        "\"You know,\" I said, \"you almost ruined my surprise attack.\"",
+        "A tan half-elf with black hair tied into a bun stepped between us before anyone could answer. One of his arms was an intricate magical prosthetic etched with glowing runes.",
+        "\"We're on the same side here,\" he said calmly. \"Is anyone hurt?\"",
+        "Smart man.",
+        "The others spread through the ruined hovel searching for clues.",
+        "Someone found a weathered sheet of parchment with five names scrawled in charcoal.",
+        "Mira Feldstone",
+        "Bram Thatch",
+        "Ilyana Greer",
+        "Holt Barrow",
+        "Sylvi Marrick",
+        "Missing people.",
+        "More victims.",
+        "Near the body of the ritual leader lay a strange pendant — a dark orb hanging from a silver chain.",
+        "Gabriel, a tall, pale half-elf dressed with more jewelry than armor, picked it up alongside Dorian.",
+        "I walked to the victim in the center of the room. Dion followed close behind, watching everything I did. Carefully, I cut the ropes binding him and eased him onto the floor. The poor man trembled violently.",
+        "\"It's over,\" I told him. \"You're safe.\"",
+        "He looked straight past me toward the sky.",
+        "\"Xavier...\"",
+        "Before anyone could ask what he meant...",
+        "His entire body turned to stone. The dust swirled up towards the sky. Every one of us looked upward. The clouds twisted into a violent spiral overhead. They churned faster... and faster… Until they formed a colossal face stretching across the heavens. Its glowing eyes locked onto us. Its voice thundered across the night.",
+        "\"YOU HAVE NO IDEA OF WHAT HORRORS AWAIT!\"",
+        "There was much deliberation on what it all meant and what was to come. Gabriel even had a vision of this dark undead lord. One thing was certain — we would head back to Withermarsh to find Elias. Oh, and there was this barbarian to deal with...",
+      ];
+    },
+    choices: (path) => {
+      const opts = [
+        {
+          label: "Dion caught me off guard. Brush it off, for now at least.",
+          flag: { s8: "neutral" },
+          next: "s9",
+          reactionTitle: "Chapter 8-1",
+          reaction:
+            "I brushed it off — for now, at least. Whatever Dion thought this was, I wasn't going to make it easy for him.",
+        },
+      ];
+
+      if (path.s5 !== "romance") {
+        opts.push({
+          label: "I respect Dion's bold honesty, strength in battle, and that gorgeous hair…",
+          flag: { s8: "flirt" },
+          next: "s9",
+          reactionTitle: "Chapter 8-2 — Oh, Dion…",
+          reaction: [
+            "I let it happen. I let my guard down a little. On the way back to Withermarsh, I walked next to Dion and he told me of his past. He played on his accordion and sang a ballad.",
+            "Dion said, \"My heart beats like a thousand war drums for you.\"",
+            "There was something charming about his honest innocence, always so bold and over the top, and there was no doubting he was a great asset to have on your side in a fight. Every once in a while he would surprise us all with some profound wisdom ahead of his time.",
+            "At the Hollow Hearth tavern in Withermarsh, Cassian asked, \"How do you know when you've become the villain?\"",
+            "Dion scratched his beard. \"When you not ask that question.\"",
+            "The whole group fell silent.",
+            "Jaksyn: \"...Did Dion just out-philosophy all of us?\"",
+            "The group laughed, and Dion replied, \"What?\"",
+          ],
+        });
+      }
+
+      if (path.s5 === "romance") {
+        opts.push({
+          label:
+            "Oh, hell no. Men are pigs. I have to shut them all down if they're going to take me seriously.",
+          flag: { s8: "shutdown" },
+          next: "s9",
+          reactionTitle: "Chapter 8-3 — Nope!",
+          reaction:
+            "I'm not interested in you, or any man. Never have been. So save yourself the trouble. All of you, unless you want a hammer to the face, but I'd rather save that for the cultists. We made our way back to Withermarsh without any further drama or ridiculous romantic gestures.",
+        });
+      }
+
+      return opts;
+    },
+  },
+
+  s9: {
+    title: "Chapter 9-1 — The Blue Wizard",
+    entries: [
+      "Word came that a wizard camped outside Withermarsh's walls — blue-skinned, older than the church itself, and possibly the only person who understood exactly what the Crimson Sun was digging for. Elias meant to reach him first, guided by a hooded stranger with a voice like dry scales who never once gave a name.",
+    ],
+    choices: [
+      {
+        label: "Go with the party.",
+        flag: { s9: "partyElias" },
+        next: "s10",
+        reaction:
+          "We found Elias before we found the wizard. Dead — days dead, from the look of it, with no clean answer for how or why. Whatever the hooded stranger knew, he wasn't telling us yet.",
+      },
+    ],
+  },
+
+  s9_2: {
+    title: "Chapter 9-2",
+    entries: [
+      "We learned from the seven adventurers' scouting that the wizard Sylvanas was behind several attacks on the trade routes. Enough was enough, and it was time to deal with him. \"You trust these guys to deal with a wizard, Elias?\" I asked him.",
+      "\"I think their intentions are mostly good… but you're right. It's a delicate situation. The wizard is also the brother of a friend of mine. Let's leave early and see if we can reason with him.\"",
+      "Elias woke me in the middle of the night, and I left a note for the seven newcomers.",
+      "\"Went on ahead. Meet you there. -Juno\"",
+    ],
+    choices: [
+      {
+        label: "Continue...",
+        flag: {},
+        next: "end_elias_death",
+        skipReaction: true,
+      },
+    ],
+  },
+
+  s10: {
+    title: "Chapter 10 — The Feast of Masks",
+    entries: [
+      "Lord Adrian's invitation arrived gold-edged and insincere, the kind of thing that means a war council dressed up as a party. The night before it, the house went quiet enough that a person could hear her own choices catching up to her.",
+      "I'd spent months elbow to elbow with this party — bleeding beside some of them, resenting others, wanting at least one of them the way I hadn't let myself want anyone in a long while.",
+    ],
+    choices: (path) => {
+      const dionFlirted = path.s8 === "flirt";
+
+      if (dionFlirted) {
+        return [
+          {
+            label: "Go to Dion. Let it be true.",
+            flag: { romance: "dion" },
+            next: "end_dion_true_love",
+            reaction:
+              "There was no point pretending otherwise, not after tonight. I went to him, and for once I didn't brace for it to be a mistake.",
+          },
+          {
+            label: "No one. Not tonight.",
+            flag: { romance: "none" },
+            next: "end_tpk_none",
+            reaction:
+              "I told the room, and myself, the truth: I didn't need any of them, not that way.",
+          },
+        ];
+      }
+
+      const opts = [
+        {
+          label: "No one. You don't need a man.",
+          flag: { romance: "none" },
+          next: "end_tpk_none",
+          reaction:
+            "I told them all the truth: I didn't need any of them, not that way.",
+        },
+        {
+          label: "One night with Gabriel. No strings.",
+          flag: { romance: "gabriel" },
+          next: "end_gabriel_ok",
+          reaction:
+            "Gabriel never once made it complicated, which was exactly why I said yes.",
+        },
+      ];
+
+      if (path.oath === "devotion" || path.s5 !== "romance") {
+        opts.push({
+          label: "Saberic. Two paladins, one vow.",
+          flag: { romance: "saberic" },
+          next: "end_saberic_bond",
+          reaction:
+            "There was a strange comfort in choosing someone who understood exactly what an oath costs.",
+        });
+      }
+
+      if (path.path === "voxborough" || path.oath === "none") {
+        opts.push(
+          {
+            label: "Go to Lief. Let him in.",
+            flag: { romance: "leif" },
+            next: (p) => {
+              if (p.oath === "devotion" || p.oath === "vengeance") return "end_leif_betray";
+              if (p.s1 === "stone") return "end_leif_escape_happy";
+              return "end_leif_escape_war";
+            },
+            reaction:
+              "Lief had earned more of my trust than I ever meant to give a man. Tonight, I stopped pretending otherwise.",
+          },
+          {
+            label: "One night with Jaksyn. Just tonight.",
+            flag: { romance: "jaksyn" },
+            next: "end_leif_betray",
+            reaction:
+              "It was only meant to be one night — no promises, no complications. I told myself that mattered less than it did.",
+          },
+          {
+            label: "One night with Dorian. See what happens.",
+            flag: { romance: "dorian" },
+            next: "end_leif_betray",
+            reaction:
+              "Dorian and I fumbled through something neither of us quite meant to start, awkward and unfinished. I let it happen anyway.",
+          },
+          {
+            label: "One night with Cassian. Live dangerously.",
+            flag: { romance: "cassian" },
+            next: "end_cassian_chaos",
+            reaction:
+              "Something about the danger in him felt honest, in a house full of people wearing masks even before the party started.",
+          }
+        );
+      }
+
+      return opts;
+    },
+  },
+
+  // ---------- EPILOGUES ----------
+  end_stuck_forever: {
+    title: "Epilogue — The Walls I Never Left",
+    entries: [
+      "By the time I finished, dawn was breaking, and so was any chance of slipping away unseen. They found me still kneeling at her grave, and the punishment that followed made certain I never came so close to that gate again.",
+      "I stayed within those walls far longer than I ever meant to. Whatever paladin I might have become out on the road, I never got the chance to find out. I became only this instead — a girl who buried her sister, and lost the world because of it.",
+    ],
+    choices: [],
+  },
+  end_xavier_love: {
+    title: "Epilogue — What Xavier Took (I)",
+    entries: [
+      "For a while, Camila and I had something like an ordinary life — the kind I'd never let myself imagine as a child in that church. It didn't last. Xavier came for Voxborough the way fire comes for dry grass, and no love I had was strong enough to stop it. I buried more than I saved that year.",
+    ],
+    choices: [],
+  },
+  end_xavier_leader: {
+    title: "Epilogue — What Xavier Took (II)",
+    entries: [
+      "I ruled those streets the way I once swore I never would — through fear, mostly, though I told myself it was order. Xavier didn't care what I'd built. He burned it the same as everything else, and left me standing in the ash asking whether a crown built on threats was ever worth the having.",
+    ],
+    choices: [],
+  },
+  end_elias_death: {
+    title: "Epilogue — The Mercenary's End",
+    entries: [
+      "This is not my hand writing this part. I imagine whoever finds this journal will want to know how it ends, so I'll tell it as best as the note and the wreckage let me piece together.",
+      "Dion found the note first, still pinned under a cup on the tavern table, ink smudged where a thumb had pressed too hard against it. Went on ahead. Meet you there. -Juno. He read it twice, out loud, like reading it again might change what it said.",
+      "They followed anyway — Saberic leading with his faith held tight, Cassian tracking a trail gone cold, Jaksyn quiet for once in his life. They found Elias first, and then Juno beside him, neither of them made it far enough to even see the wizard's camp. Whatever had found them in the dark hadn't needed the trade routes or the rumors at all. It had simply been waiting.",
+      "There was no time to grieve properly. Sylvanas was still out there, and behind him, Xavier's shadow had already begun stretching toward Withermarsh. The seven of them buried what they could, said what needed saying, and went on without the woman who was supposed to be leading them.",
+      "What became of them — whether they stopped Sylvanas, whether Xavier ever found what he was looking for, whether any of them lived to tell it themselves — is not written here. Juno's journal ends at the bottom of this page, unfinished, the way so much of her life had been.",
+    ],
+    choices: [],
+  },
+  end_leif_betray: {
+    title: "Epilogue — What Lief Was",
+    entries: (path) => {
+      let opener;
+      if (path.romance === "leif") {
+        opener =
+          "I let Lief in the way I hadn't let anyone in since Camila, and for a handful of nights it felt like something worth surviving for.";
+      } else if (path.romance === "jaksyn") {
+        opener =
+          "It was only meant to be one night with Jaksyn — no promises, no complications. I told myself that mattered less than it did.";
+      } else {
+        opener =
+          "Dorian and I fumbled through something neither of us quite meant to start, awkward and unfinished. I let it happen anyway.";
+      }
+      return [
+        opener,
+        "Whatever I thought I understood about Lief, I was wrong. When it mattered most, he turned — quietly, completely, in a way that cost the party more than I've been able to put into words on this page. I don't write his name gently anymore.",
+      ];
+    },
+    choices: [],
+  },
+  end_leif_escape_happy: {
+    title: "Epilogue — The Quiet Years",
+    entries: [
+      "Cassian lost whatever war he'd been fighting with himself, and the rest of the party paid for it. Lief and I got out — barely, together, the two of us against a world that had already taken everything else. We didn't go looking for another fight after that. We found a quiet corner of Kjlovania and stayed there, and for the first time in my life, unyielding stopped meaning alone.",
+    ],
+    choices: [],
+  },
+  end_leif_escape_war: {
+    title: "Epilogue — The War Found Us",
+    entries: [
+      "Cassian lost whatever war he'd been fighting with himself, and the rest of the party paid for it. Lief and I got out together, but the peace didn't last — the same fire that had always lived in me pulled us both back into a war neither of us walked away from. I don't regret loving him. I regret how it ended.",
+    ],
+    choices: [],
+  },
+  end_cassian_chaos: {
+    title: "Epilogue — The Dinner That Didn't End",
+    entries: [
+      "One night with Cassian was supposed to be simple. At Adrian's table the next evening, whatever he'd been holding back finally came apart, and it took almost everyone with it. Lief made it out. I keep asking myself if I could have seen it coming, and I keep arriving at the same answer: yes, and I didn't want to.",
+    ],
+    choices: [],
+  },
+  end_dion_true_love: {
+    title: "Epilogue — True Love, Briefly",
+    entries: [
+      "Dion turned out to be exactly as genuine as he'd always insisted he was, and for the first time, I let a man see every part of me and didn't brace for the worst. It came anyway — I fell in battle before the story was finished, doing the only thing I ever really knew how to do. The others carried on without me. I hope they carried Vengeance forward too.",
+    ],
+    choices: [],
+  },
+  end_gabriel_ok: {
+    title: "Epilogue — No Complications",
+    entries: [
+      "One night with Gabriel turned out to be exactly what it promised — easy, warm, and entirely without consequence. Some nights, that's the kindest thing the world can offer someone like me.",
+    ],
+    choices: [],
+  },
+  end_saberic_bond: {
+    title: "Epilogue — Two Vows, One Strength",
+    entries: [
+      "Saberic and I found something rare — two paladins bound by the same iron discipline, stronger together than either of us alone. We saved Vera when no one else could reach her in time. There was no bringing back what we'd already lost along the way. Not even two oaths together can undo everything.",
+    ],
+    choices: [],
+  },
+  end_tpk_none: {
+    title: "Epilogue — No Man, No Mercy",
+    entries: [
+      "I told them all the truth: I didn't need any of them, not that way. It cost me nothing that night, and everything not long after — the battle that followed left none of us standing to argue about who'd been right.",
+    ],
+    choices: [],
+  },
+};
+
+const START = "s1";
+
+// ---------- WAX SEAL ----------
+function WaxSeal({ show }) {
+  return (
+    <div
+      className={`pointer-events-none absolute inset-0 flex items-center justify-center z-30 transition-all duration-500 ${
+        show ? "opacity-100 scale-100" : "opacity-0 scale-150"
+      }`}
+      style={{ transitionTimingFunction: "cubic-bezier(.2,1.4,.4,1)" }}
+    >
+      <svg width="180" height="180" viewBox="0 0 180 180">
+        <circle cx="90" cy="90" r="82" fill="#6B1F1F" opacity="0.95" />
+        <circle cx="90" cy="90" r="82" fill="none" stroke="#3d1010" strokeWidth="3" />
+        <circle cx="90" cy="90" r="70" fill="none" stroke="#9C7A3C" strokeWidth="1.5" opacity="0.7" />
+        <g stroke="#c9a24a" strokeWidth="2" opacity="0.85">
+          {Array.from({ length: 12 }).map((_, i) => {
+            const a = (i * Math.PI * 2) / 12;
+            const x1 = 90 + Math.cos(a) * 34;
+            const y1 = 90 + Math.sin(a) * 34;
+            const x2 = 90 + Math.cos(a) * 46;
+            const y2 = 90 + Math.sin(a) * 46;
+            return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} />;
+          })}
+        </g>
+        <path
+          d="M90 60 C80 62 70 70 66 82 C74 78 80 78 84 82 C78 86 70 92 68 100 C78 96 86 92 90 92 C94 92 102 96 112 100 C110 92 102 86 96 82 C100 78 106 78 114 82 C110 70 100 62 90 60 Z"
+          fill="#e8dcc5"
+          opacity="0.92"
+        />
+      </svg>
+    </div>
+  );
+}
+
+// ---------- TATTOO ICON ----------
+function hexToRgb(hex) {
+  const n = parseInt(hex.replace("#", ""), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+function lerpColor(a, b, t) {
+  const [r1, g1, b1] = hexToRgb(a);
+  const [r2, g2, b2] = hexToRgb(b);
+  const r = Math.round(r1 + (r2 - r1) * t);
+  const g = Math.round(g1 + (g2 - g1) * t);
+  const bl = Math.round(b1 + (b2 - b1) * t);
+  return `rgb(${r},${g},${bl})`;
+}
+
+function darknessScore(path) {
+  let d = 3;
+  if (path.s1 === "fire") d += 2;
+  if (path.s1 === "stone") d -= 1;
+  if (path.s3 === "burn") d += 3;
+  if (path.s3 === "bury") d -= 2;
+  if (path.s3 === "leave" || path.s3 === "flee") d -= 0.5;
+  if (path.path === "withermarsh") d += 1;
+  if (path.s5 === "notmyproblem") d += 1;
+  if (path.s5 === "romance") d -= 1;
+  if (path.oath === "vengeance") d += 1.5;
+  if (path.oath === "devotion") d -= 1.5;
+  return Math.min(1, Math.max(0, d / 10));
+}
+
+function iconKind(path) {
+  if (path.oath === "vengeance" || path.oath === "devotion") return "shield";
+  if (path.oath === "none") return "sword";
+  return "hammer";
+}
+
+// ---------- TATTOO SLEEVE ----------
+// Every meaningful choice adds a small ink mark instead of replacing the last
+// one — a running record along the margin of who she's become, one decision
+// at a time.
+const TATTOO_DEFS = {
+  "s1:stone": { kind: "mountain", wash: "#6b7d64" },
+  "s1:fire": { kind: "flame", wash: "#b23a1f" },
+  "escape:night": { kind: "moon", wash: "#7a8ba3" },
+  "escape:planned": { kind: "horseshoe", wash: "#8a6a3a" },
+  "s3:burn": { kind: "dagger", wash: "#8a1f1f" },
+  "s3:bury": { kind: "flower", wash: "#c06a8a" },
+  "s3:flee": { kind: "arrow", wash: "#7a6a4a" },
+  "path:voxborough": { kind: "cityscape", wash: "#b8963c" },
+  "path:withermarsh": { kind: "reeds", wash: "#4a6b4a" },
+  "s5:romance": { kind: "heart", wash: "#a8355a" },
+  "s5:detached": { kind: "wall", wash: "#6b6b6b" },
+  "s5:notmyproblem": { kind: "eye", wash: "#3a3a3a" },
+  "oath:vengeance": { kind: "raven", wash: "#8a1f1f" },
+  "oath:none": { kind: "star", wash: "#b8963c" },
+  "oath:devotion": { kind: "sun", wash: "#d1a13c" },
+  "s8:neutral": { kind: "dash", wash: "#6b6b6b" },
+  "s8:flirt": { kind: "spark", wash: "#c77b3c" },
+  "s8:shutdown": { kind: "lock", wash: "#5a5a5a" },
+  "s9:partyElias": { kind: "feather", wash: "#5a5a5a" },
+  "romance:dion": { kind: "heartSolid", wash: "#a8355a" },
+  "romance:leif": { kind: "heartOutline", wash: "#a8355a" },
+  "romance:jaksyn": { kind: "note", wash: "#7a4a8a" },
+  "romance:dorian": { kind: "book", wash: "#3a5a8a" },
+  "romance:cassian": { kind: "fang", wash: "#8a1f1f" },
+  "romance:gabriel": { kind: "sparkStar", wash: "#c77b3c" },
+  "romance:saberic": { kind: "crossSwords", wash: "#8a6a3a" },
+  "romance:none": { kind: "fist", wash: "#5a5a5a" },
+};
+const TATTOO_ORDER = ["s1", "escape", "s3", "path", "s5", "oath", "s8", "s9", "romance"];
+
+function getTattoos(path) {
+  const list = [];
+  for (const key of TATTOO_ORDER) {
+    const val = path[key];
+    if (!val) continue;
+    const def = TATTOO_DEFS[`${key}:${val}`];
+    if (def) list.push({ id: `${key}:${val}`, ...def });
+  }
+  return list;
+}
+
+const INK = "#241A10";
+
+function TattooShape({ kind, wash }) {
+  switch (kind) {
+    case "mountain":
+      return <path d="M2 18 L9 6 L13 12 L16 8 L22 18 Z" fill={wash} stroke={INK} strokeWidth="1.2" strokeLinejoin="round" />;
+    case "flame":
+      return (
+        <path
+          d="M12 3 C9 7 7 10 8 14 C8.5 17.5 15.5 17.5 16 14 C17 10 14.5 9 14.5 6.5 C14.5 8.5 13 8 12 3 Z"
+          fill={wash}
+          stroke={INK}
+          strokeWidth="1.2"
+        />
+      );
+    case "moon":
+      return <path d="M15 4 A9 9 0 1 0 15 20 A7 7 0 1 1 15 4 Z" fill={wash} stroke={INK} strokeWidth="1.1" />;
+    case "horseshoe":
+      return <path d="M6 20 C6 10 9 5 12 5 C15 5 18 10 18 20" fill="none" stroke={wash} strokeWidth="3" strokeLinecap="round" />;
+    case "dagger":
+      return (
+        <g stroke={INK} strokeWidth="1.1" strokeLinejoin="round">
+          <path d="M12 2 L14 12 L10 12 Z" fill={wash} />
+          <line x1="7" y1="12" x2="17" y2="12" strokeWidth="2" />
+          <line x1="12" y1="12" x2="12" y2="21" strokeWidth="2.4" />
+        </g>
+      );
+    case "flower":
+      return (
+        <g stroke={INK} strokeWidth="1" fill={wash}>
+          <circle cx="12" cy="7" r="3" />
+          <circle cx="17" cy="12" r="3" />
+          <circle cx="12" cy="17" r="3" />
+          <circle cx="7" cy="12" r="3" />
+          <circle cx="12" cy="12" r="2.4" fill="#e8dcc5" />
+        </g>
+      );
+    case "arrow":
+      return (
+        <g stroke={wash} strokeWidth="2" strokeLinecap="round" fill="none">
+          <line x1="4" y1="12" x2="19" y2="12" />
+          <path d="M14 7 L19 12 L14 17" />
+        </g>
+      );
+    case "cityscape":
+      return (
+        <g fill={wash} stroke={INK} strokeWidth="1">
+          <rect x="3" y="10" width="5" height="11" />
+          <rect x="9.5" y="5" width="5" height="16" />
+          <rect x="16" y="12" width="5" height="9" />
+        </g>
+      );
+    case "reeds":
+      return (
+        <g stroke={wash} strokeWidth="1.6" strokeLinecap="round" fill="none">
+          <path d="M7 21 C7 13 6 9 5 5" />
+          <path d="M12 21 C12 12 12 7 12 3" />
+          <path d="M17 21 C17 13 18 9 19 5" />
+        </g>
+      );
+    case "heart":
+    case "heartSolid":
+      return (
+        <path
+          d="M12 20 C4 14 3 9 6 6.5 C8.5 4.5 11 6 12 8 C13 6 15.5 4.5 18 6.5 C21 9 20 14 12 20 Z"
+          fill={wash}
+          stroke={INK}
+          strokeWidth="1.1"
+        />
+      );
+    case "heartOutline":
+      return (
+        <path
+          d="M12 20 C4 14 3 9 6 6.5 C8.5 4.5 11 6 12 8 C13 6 15.5 4.5 18 6.5 C21 9 20 14 12 20 Z"
+          fill="none"
+          stroke={wash}
+          strokeWidth="1.4"
+        />
+      );
+    case "wall":
+      return (
+        <g fill="none" stroke={wash} strokeWidth="1.3">
+          <rect x="3" y="6" width="8" height="5" />
+          <rect x="11" y="6" width="8" height="5" />
+          <rect x="7" y="11" width="8" height="5" />
+          <rect x="3" y="16" width="8" height="5" />
+          <rect x="11" y="16" width="8" height="5" />
+        </g>
+      );
+    case "eye":
+      return (
+        <g stroke={INK} strokeWidth="1.3" fill="none" strokeLinecap="round">
+          <path d="M4 12 Q12 8 20 12" />
+          <line x1="6" y1="13" x2="4.5" y2="15" />
+          <line x1="10" y1="14.5" x2="9" y2="17" />
+          <line x1="14" y1="14.5" x2="15" y2="17" />
+          <line x1="18" y1="13" x2="19.5" y2="15" />
+        </g>
+      );
+    case "raven":
+      return (
+        <path
+          d="M12 4 C8 5 5 9 4 13 C6.5 11.5 9 11.5 10.5 13 C8.5 14.5 5 17 4 20 C8 18.5 10.5 17 12 17 C13.5 17 16 18.5 20 20 C19 17 15.5 14.5 13.5 13 C15 11.5 17.5 11.5 20 13 C19 9 16 5 12 4 Z"
+          fill={wash}
+          stroke={INK}
+          strokeWidth="0.8"
+        />
+      );
+    case "star":
+    case "sparkStar":
+      return (
+        <path
+          d="M12 2 L14.5 9 L22 9.5 L16 14.2 L18 21.5 L12 17.3 L6 21.5 L8 14.2 L2 9.5 L9.5 9 Z"
+          fill={wash}
+          stroke={INK}
+          strokeWidth="1"
+        />
+      );
+    case "sun":
+      return (
+        <g stroke={wash} strokeWidth="1.6" strokeLinecap="round">
+          <circle cx="12" cy="12" r="3.6" fill={wash} stroke="none" />
+          {Array.from({ length: 8 }).map((_, i) => {
+            const a = (i * Math.PI * 2) / 8;
+            const x1 = 12 + Math.cos(a) * 5.2;
+            const y1 = 12 + Math.sin(a) * 5.2;
+            const x2 = 12 + Math.cos(a) * 9;
+            const y2 = 12 + Math.sin(a) * 9;
+            return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} />;
+          })}
+        </g>
+      );
+    case "dash":
+      return <line x1="4" y1="12" x2="20" y2="12" stroke={wash} strokeWidth="2.4" strokeLinecap="round" />;
+    case "spark":
+      return (
+        <g stroke={wash} strokeWidth="1.8" strokeLinecap="round">
+          <line x1="12" y1="3" x2="12" y2="21" />
+          <line x1="3" y1="12" x2="21" y2="12" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+          <line x1="18" y1="6" x2="6" y2="18" />
+        </g>
+      );
+    case "lock":
+      return (
+        <g stroke={INK} strokeWidth="1.2" fill="none">
+          <rect x="5" y="11" width="14" height="10" rx="1.5" fill={wash} />
+          <path d="M8 11 V7.5 C8 4.5 16 4.5 16 7.5 V11" />
+        </g>
+      );
+    case "feather":
+      return (
+        <g stroke={INK} strokeWidth="1" fill={wash}>
+          <path d="M12 2 C7 6 6 14 10 21 C11 15 12 12 12 2 Z" />
+          <line x1="12" y1="4" x2="12" y2="19" stroke={INK} strokeWidth="0.8" />
+        </g>
+      );
+    case "note":
+      return (
+        <g stroke={INK} strokeWidth="1" fill={wash}>
+          <circle cx="8" cy="18" r="3" />
+          <line x1="11" y1="18" x2="11" y2="4" stroke={INK} strokeWidth="1.3" />
+          <path d="M11 4 L18 6.5 V10 L11 7.5 Z" />
+        </g>
+      );
+    case "book":
+      return (
+        <g stroke={INK} strokeWidth="1.1" fill="none">
+          <path d="M12 6 C10 4.5 6 4.5 4 5.5 V18 C6 17 10 17 12 18.5" fill={wash} />
+          <path d="M12 6 C14 4.5 18 4.5 20 5.5 V18 C18 17 14 17 12 18.5" fill={wash} />
+        </g>
+      );
+    case "fang":
+      return (
+        <g fill={wash} stroke={INK} strokeWidth="0.8">
+          <path d="M8 4 L11 4 L9.5 14 Z" />
+          <path d="M13 4 L16 4 L14.5 14 Z" />
+        </g>
+      );
+    case "crossSwords":
+      return (
+        <g stroke={wash} strokeWidth="2" strokeLinecap="round">
+          <line x1="4" y1="4" x2="20" y2="20" />
+          <line x1="20" y1="4" x2="4" y2="20" />
+          <line x1="5.5" y1="5.5" x2="2.5" y2="2.5" strokeWidth="2.4" />
+          <line x1="18.5" y1="5.5" x2="21.5" y2="2.5" strokeWidth="2.4" />
+        </g>
+      );
+    case "fist":
+      return (
+        <g fill={wash} stroke={INK} strokeWidth="1">
+          <rect x="6" y="9" width="12" height="9" rx="3" />
+          <rect x="8" y="5" width="8" height="6" rx="2" />
+        </g>
+      );
+    default:
+      return <circle cx="12" cy="12" r="6" fill={wash} stroke={INK} strokeWidth="1" />;
+  }
+}
+
+function TattooStrip({ path }) {
+  const tattoos = getTattoos(path);
+  if (tattoos.length === 0) return null;
+  return (
+    <div className="flex flex-wrap items-center justify-center" style={{ gap: "0.5rem", marginTop: "0.6rem" }}>
+      {tattoos.map((t) => (
+        <div key={t.id} className="tattoo-mark" style={{ width: 24, height: 24 }}>
+          <svg width="24" height="24" viewBox="0 0 24 24">
+            <TattooShape kind={t.kind} wash={t.wash} />
+          </svg>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// ---------- TORN PAGE ----------
+function tornEdge(flip) {
+  const teeth = 14;
+  let pts = [];
+  for (let i = 0; i <= teeth; i++) {
+    const x = (i / teeth) * 100;
+    const y = i % 2 === 0 ? 0 : 1.6;
+    pts.push(`${x}% ${flip ? 100 - y : y}%`);
+  }
+  return pts.join(",");
+}
+
+function JunoJournal() {
+  const [sceneId, setSceneId] = useState(START);
+  const [path, setPath] = useState({});
+  const [reaction, setReaction] = useState(null);
+  const [reactionTitle, setReactionTitle] = useState(null);
+  const [pendingNext, setPendingNext] = useState(null);
+  const [sealing, setSealing] = useState(false);
+  const [fading, setFading] = useState(false);
+  const [history, setHistory] = useState([]);
+  const pageRef = useRef(null);
+
+  const scene = SCENES[sceneId];
+  const choices = reaction ? [] : resolve(scene.choices, path);
+
+  useEffect(() => {
+    if (pageRef.current) pageRef.current.scrollTo({ top: 0, behavior: "smooth" });
+  }, [sceneId, reaction]);
+
+  function choose(choice) {
+    const newPath = { ...path, ...choice.flag };
+    setHistory((h) => [...h, { sceneId, path }]);
+    setPath(newPath);
+
+    if (choice.skipReaction) {
+      const nextId = resolve(choice.next, newPath);
+      setSealing(true);
+      setTimeout(() => {
+        setSealing(false);
+        setFading(true);
+        setTimeout(() => {
+          setSceneId(nextId);
+          setFading(false);
+        }, 350);
+      }, 650);
+      return;
+    }
+
+    const reactionText = resolve(choice.reaction, newPath);
+    const nextId = resolve(choice.next, newPath);
+    setReaction(reactionText);
+    setReactionTitle(choice.reactionTitle || "The Ink Settles");
+    setPendingNext(nextId);
+    setSealing(true);
+    setTimeout(() => setSealing(false), 900);
+  }
+
+  function proceed() {
+    setFading(true);
+    setTimeout(() => {
+      setSceneId(pendingNext);
+      setReaction(null);
+      setReactionTitle(null);
+      setPendingNext(null);
+      setFading(false);
+    }, 350);
+  }
+
+  function goBack() {
+    if (history.length === 0) return;
+    const prev = history[history.length - 1];
+    setHistory((h) => h.slice(0, -1));
+    setSceneId(prev.sceneId);
+    setPath(prev.path);
+    setReaction(null);
+    setReactionTitle(null);
+    setPendingNext(null);
+    setSealing(false);
+    setFading(false);
+  }
+
+  function restart() {
+    setSceneId(START);
+    setPath({});
+    setReaction(null);
+    setReactionTitle(null);
+    setPendingNext(null);
+    setHistory([]);
+  }
+
+  const entries = reaction ? (Array.isArray(reaction) ? reaction : [reaction]) : resolve(scene.entries, path);
+
+  return (
+    <div
+      className="w-full min-h-screen flex items-center justify-center p-4 sm:p-8"
+      style={{
+        background: "radial-gradient(ellipse at center, #1c1712 0%, #0e0b08 70%)",
+        fontFamily: "'EB Garamond', serif",
+      }}
+    >
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,600;1,400;1,500&display=swap');
+        .grain::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          pointer-events: none;
+          opacity: 0.05;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+        .choice-btn { transition: all 0.25s ease; }
+        .choice-btn:hover { transform: translateX(4px); }
+        .choice-btn:focus-visible { outline: 2px solid #6B1F1F; outline-offset: 3px; }
+        @keyframes tattooBloom {
+          0% { opacity: 0; transform: scale(1.6); filter: blur(1.5px); }
+          60% { opacity: 1; transform: scale(0.92); filter: blur(0); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+        .tattoo-mark { animation: tattooBloom 0.7s ease-out; }
+        .restart-link { transition: opacity 0.2s ease; opacity: 0.55; }
+        .restart-link:hover { opacity: 1; }
+      `}</style>
+
+      <div className="relative w-full max-w-2xl" style={{ filter: "drop-shadow(0 25px 45px rgba(0,0,0,0.6))" }}>
+        <div className="text-center mb-4 px-2">
+          <h1
+            style={{
+              fontFamily: "'Cinzel', serif",
+              fontWeight: 700,
+              fontSize: "1.15rem",
+              letterSpacing: "0.05em",
+              color: "#9E1B32",
+              textShadow: "0 2px 10px rgba(0,0,0,0.5)",
+            }}
+          >
+            Juno's Journal
+          </h1>
+          <p
+            style={{
+              fontFamily: "'EB Garamond', serif",
+              fontStyle: "italic",
+              fontSize: "0.75rem",
+              color: "#C7A15A",
+              marginTop: "0.1rem",
+              letterSpacing: "0.03em",
+            }}
+          >
+            A Kjlovania Adventure Story
+          </p>
+          <TattooStrip path={path} />
+        </div>
+
+        <div
+          ref={pageRef}
+          className="grain relative overflow-y-auto"
+          style={{
+            background: "linear-gradient(135deg, #ECE0C4 0%, #E2D3AC 45%, #D8C596 100%)",
+            clipPath: `polygon(${tornEdge(false)}, 100% 100%, 0% 100%)`,
+            maxHeight: "85vh",
+            minHeight: "60vh",
+            padding: "3.5rem 2.5rem 3rem",
+            color: "#2B2117",
+          }}
+        >
+          <WaxSeal show={sealing} />
+
+          <div className="transition-opacity duration-300" style={{ opacity: fading ? 0 : 1 }}>
+            <div className="mb-6">
+              <h1
+                style={{
+                  fontFamily: "'Cinzel', serif",
+                  fontWeight: 700,
+                  fontSize: "1.15rem",
+                  letterSpacing: "0.04em",
+                  color: "#9E1B32",
+                }}
+              >
+                {reaction ? reactionTitle : scene.title}
+              </h1>
+              {!reaction && scene.dateline && (
+                <p
+                  style={{
+                    fontFamily: "'EB Garamond', serif",
+                    fontStyle: "italic",
+                    fontSize: "0.85rem",
+                    color: "#8a7454",
+                    marginTop: "0.15rem",
+                    letterSpacing: "0.03em",
+                  }}
+                >
+                  {scene.dateline}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-4" style={{ fontSize: "1.05rem", lineHeight: 1.75 }}>
+              {entries.map((p, i) => (
+                <p key={i} style={{ fontStyle: reaction ? "italic" : i === 0 ? "italic" : "normal", color: "#2B2117" }}>
+                  {p}
+                </p>
+              ))}
+            </div>
+
+            <div className="mt-9 pt-6" style={{ borderTop: "1px solid rgba(43,33,23,0.25)" }}>
+              {!reaction && choices.length > 0 && (
+                <div className="space-y-3">
+                  {choices.map((c, i) => (
+                    <button
+                      key={i}
+                      onClick={() => choose(c)}
+                      className="choice-btn w-full text-left px-4 py-3 rounded-sm"
+                      style={{
+                        background: "rgba(107,31,31,0.06)",
+                        borderLeft: "3px solid #9C7A3C",
+                        fontStyle: "italic",
+                        fontSize: "1rem",
+                        color: "#3d2c1a",
+                      }}
+                    >
+                      {c.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {reaction && (
+                <button
+                  onClick={proceed}
+                  className="choice-btn px-5 py-2.5 rounded-sm"
+                  style={{
+                    background: "#3d2c1a",
+                    color: "#ECE0C4",
+                    fontFamily: "'Cinzel', serif",
+                    fontSize: "0.8rem",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  TURN THE PAGE
+                </button>
+              )}
+
+              {!reaction && choices.length === 0 && (
+                <p
+                  style={{
+                    fontStyle: "italic",
+                    fontSize: "0.9rem",
+                    color: "#6b5a3f",
+                  }}
+                >
+                  — the ink runs dry here —
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div
+          aria-hidden="true"
+          style={{
+            height: 10,
+            background: "linear-gradient(135deg, #D8C596, #C7B48A)",
+            clipPath: `polygon(${tornEdge(true)}, 100% 100%, 0% 100%)`,
+          }}
+        />
+
+        <div className="flex items-center justify-center gap-5 mt-3">
+          {history.length > 0 && (
+            <button
+              onClick={goBack}
+              className="restart-link"
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                fontFamily: "'EB Garamond', serif",
+                fontStyle: "italic",
+                fontSize: "0.75rem",
+                color: "#8a7454",
+                letterSpacing: "0.02em",
+              }}
+            >
+              ‹ back a page
+            </button>
+          )}
+          <button
+            onClick={restart}
+            className="restart-link"
+            style={{
+              background: "none",
+              border: "none",
+              cursor: "pointer",
+              fontFamily: "'EB Garamond', serif",
+              fontStyle: "italic",
+              fontSize: "0.75rem",
+              color: "#8a7454",
+              letterSpacing: "0.02em",
+            }}
+          >
+            ↺ begin the journal again
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(<JunoJournal />);
+</script>
+</body>
+</html>
