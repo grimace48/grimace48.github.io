@@ -22,6 +22,7 @@ let pendingScene = null;
 
 function render() {
     const scene = SCENES[currentScene];
+    renderSymbols();
     chapter.textContent = reaction
         ? reaction.title || "The Ink Settles"
         : scene.title;
@@ -197,6 +198,46 @@ function resolve(value){
 
 }
 
+function renderSymbols(){
+
+    symbols.innerHTML = "";
+
+    const icons = [];
+
+    // ---------- Childhood ----------
+    if(path.s1 === "stone")
+        icons.push("🪨");
+
+    if(path.s1 === "fire")
+        icons.push("🔥");
+
+    // ---------- Escape ----------
+    if(path.escape === "planned")
+        icons.push("🐎");
+
+    if(path.escape === "night")
+        icons.push("🌙");
+
+    // ---------- Zinnia ----------
+    if(path.s3 === "burn")
+        icons.push("🩸");
+
+    if(path.s3 === "flee")
+        icons.push("🕊");
+
+    // Draw them
+
+    icons.forEach(icon=>{
+
+        const span=document.createElement("span");
+
+        span.textContent=icon;
+
+        symbols.appendChild(span);
+
+    });
+
+}
 
 </script>
 
@@ -705,19 +746,11 @@ const SCENES = {
 
 <header>
 
-<h1>Juno's Journal</h1>
+    <h1>Juno's Journal</h1>
 
-<h2>A Kjlovania Adventure</h2>
+    <h2>A Kjlovania Adventure</h2>
 
-<div id="symbols">
-
-<span>▲</span>
-
-<span>∩</span>
-
-<span>✝</span>
-
-</div>
+    <div id="symbols"></div>
 
 </header>
 
@@ -753,6 +786,7 @@ const chapter = document.getElementById("chapter");
 const story = document.getElementById("story");
 const choices = document.getElementById("choices");
 const restart = document.getElementById("restart");
+const symbols = document.getElementById("symbols");
 
 restart.onclick = restartJournal;
 
