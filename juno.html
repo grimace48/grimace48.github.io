@@ -930,19 +930,26 @@ const SCENES = {
   },
 
   s9_2: {
-    title: "Epilogue 9-2",
+    title: "Chapter 9-2: Deal with the Wizard",
     entries: [
       "We learned from the seven adventurers' scouting that the wizard Sylvanas was behind several attacks on the trade routes. Enough was enough, and it was time to deal with him. \"You trust these guys to deal with a wizard, Elias?\" I asked him.",
       "\"I think their intentions are mostly good… but you're right. It's a delicate situation. The wizard is also the brother of a friend of mine. Let's leave early and see if we can reason with him.\"",
       "Elias woke me in the middle of the night, and I left a note for the seven newcomers.",
-      "\"Went on ahead. Meet you there. -Juno\"",
-      "They followed anyway. They found Elias first, and then Juno beside him, neither of them made it far enough to even see the wizard's camp.",
-      "Juno's journal ends at the bottom of this page, unfinished, the way so much of her life had been.",
+      "\"Went on ahead. Meet you there. -Juno\""
+    ],
+    choices: [{ label: "Continue...", flag: {}, next: "s9_2_1" }],
+  },
+
+  s9_2_1: {
+    title: "Epilogue of the Mercenary 9-2",
+    entries: [
+      "Juno’s Journal ends here. As a curious historian, I found a desire to conclude her journal with an epilogue. ",
+      "We followed after Juno and Elias into the dangerous Eldritch Tower to find the pale blue wizard, Sylvanas. After narrowly defeating him, we found the charred bodies of Juno and Elias. We gave them a proper burial in the wood nearby. Their plans remain shrouded in mystery, but perhaps we can learn more in Braxia, or perhaps we walk towards even greater danger…",
+      "  - Dorian Gearhart",
       "THE END",
     ],
     choices: [],
   },
-
   s10: {
     title: "Chapter 10: Braxia",
     entries: [
@@ -970,8 +977,7 @@ const SCENES = {
           next: "s10_3",
         });
       }
-      // TODO: your notes list identical conditions (8-1 and 5-2 and 6-3) for both
-      // Saberic and Dorian below — double check which one was meant to differ.
+
       if (path.s8_1 && path.s5_2 && path.s6_3) {
         opts.push({
           label: "Sir Saberic, the Redemption Paladin. He understands me. Two paladins in love would be an unbreakable bond.",
@@ -1013,7 +1019,7 @@ const SCENES = {
 
   s10_1: {
     title: "Chapter 10-1: Alone",
-    entries: ["I told myself the truth: I didn't need any of them, not that way."],
+    entries: ["I awoke well rested, yet I felt apprehensive towards the dress waiting for me, though It was beautifully dangerous looking with black lace and lined with a thin layer of hidden armor."],
     choices: [{ label: "Continue...", flag: {}, next: "s11" }],
   },
   s10_2: {
