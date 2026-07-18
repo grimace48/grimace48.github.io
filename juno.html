@@ -12,7 +12,7 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<script>
+<script> // functions
   // js functions
 const SAVE_KEY = "junoJournalSave";
 
@@ -91,7 +91,7 @@ function selectChoice(choice){
     Object.assign(path, choice.flag);
 
     // Skip reaction pages
-    if(choice.skipReaction){
+    if(true){
 
         currentScene = resolve(choice.next);
 
@@ -267,7 +267,7 @@ function renderSymbols(){
 
 </script>
 
-<style>
+<style> 
     *{
         margin:0;
         padding:0;
@@ -585,11 +585,11 @@ function renderSymbols(){
 
 <div id="journal">
 
-<script>
+<script> // story
 // ---------- STORY DATA ----------
 const SCENES = {
   s1: {
-    title: "Chapter 1 — Seven Lashings",
+    title: "Chapter 1: Seven Lashings",
     entries: [
       "April 1737",
       "His shadow loomed over me as I scrubbed the monastery floor on my hands and knees. The smell of waxed oak was overpowered by soap and spilled wine. A leather strap came down against my back with a loud crack. Already, bruises and scars had formed on my back, and this holy priest of the Crimson Sun intended to add another layer.",
@@ -598,23 +598,35 @@ const SCENES = {
     choices: [
       {
         label: "Remain a rock. Strong, calm, and unyielding. Give him nothing.",
-        flag: { s1: "stone" },
-        next: "s2",
-        reaction:
-          "I did not cry out. I would not give him that coin to spend. I let my jaw lock and my eyes go flat as river stone, and somewhere in that silence I found the first shape of the woman I'd become — the one who does not break where others can see.",
+        flag: { s1_1: true },
+        next: "s1_1",
       },
       {
         label: "Fight fire with fire. Scream. Make your pain echo in the back of his mind for nights to come. Give him doubts.",
-        flag: { s1: "fire" },
-        next: "s2",
-        reaction:
-          "I screamed. I clawed. I looked him dead in the eye and let him see that I would remember every second of this, that I would carry it forward like a blade with his name etched into the steel. If I was going to hurt, he was going to lie awake wondering when I'd come to collect.",
+        flag: { s1_2: true },
+        next: "s1_2",
       },
     ],
   },
 
+  s1_1: {
+    title: "Chapter 1-1: Stone",
+    entries: [
+      "I did not cry out. I would not give him that coin to spend. I let my jaw lock and my eyes go flat as river stone, and somewhere in that silence I found the first shape of the woman I'd become — the one who does not break where others can see.",
+    ],
+    choices: [{ label: "Continue...", flag: {}, next: "s2" }],
+  },
+
+  s1_2: {
+    title: "Chapter 1-2: Fire",
+    entries: [
+      "I screamed. I clawed. I looked him dead in the eye and let him see that I would remember every second of this, that I would carry it forward like a blade with his name etched into the steel. If I was going to hurt, he was going to lie awake wondering when I'd come to collect.",
+    ],
+    choices: [{ label: "Continue...", flag: {}, next: "s2" }],
+  },
+
   s2: {
-    title: "Chapter 2 — Zinnia",
+    title: "Chapter 2: Zinnia",
     entries: [
       "We'd dreamed about leaving for years — the two of us, whispering it into the dark of the stable where it was safe to want things out loud. Zinnia was the one who kept the dream alive when I wanted to let it die. She had a way of collecting hope like other children collected pebbles, and she never seemed to run out. She was the smart one, optimistic, and compassionate. The world was darker in my eyes.",
       "The church called us wards. Called it discipline when they beat us, called themselves our betters. What we were, plainly, were two girls whose parents had vanished somewhere in the years before memory, left in the keeping of people who found God easier to preach than to practice.",
@@ -623,173 +635,206 @@ const SCENES = {
     choices: [
       {
         label: "Run tonight. We have nothing but each other — that has to be enough. No more beatings. No drunken clergy.",
-        flag: { escape: "night", path: "withermarsh" },
-        next: "s4_2",
-        reactionTitle: "Chapter 2-1 — Run Together",
-        reaction: [
-          "We went east. The road was hard. Zinnia came down with a fever she could not shake.",
-          "We finally made it to a town called Withermarsh, but it wasn't enough. It was too late for their backwoods medicine.",
-          "Zinnia died as I knelt beside her bed.",
-        ],
+        flag: { s2_1: true },
+        next: "s2_1",
       },
       {
         label: "Wait. Plan it. Rations, the horses, a real chance at the road.",
-        flag: { escape: "planned" },
+        flag: { s2_2: true },
         next: "s3",
-        skipReaction: true,
       },
     ],
   },
 
+  s2_1: {
+    title: "Chapter 2-1: Run Together",
+    entries: [
+      "We went east. The road was hard. Zinnia came down with a fever she could not shake.",
+      "We finally made it to a town called Withermarsh, but it wasn't enough. It was too late for their backwoods medicine.",
+      "Zinnia died as I knelt beside her bed.",
+    ],
+    choices: [{ label: "Continue...", flag: {}, next: "s4_2" }],
+  },
+
   s3: {
-    title: "Chapter 3 — A Flower Falls",
+    title: "Chapter 3: A Flower Falls",
     entries: [
       "For weeks, Zinnia and I stole our freedom one handful at a time.",
       "Every day we carried a little more to the stable until we had enough to survive. Every day we also battered the front door's lock against the frame as we came and went...",
-      "One filthy arm wrapped around her waist while the other crushed her wrist. Even through the dim candlelight I could see the panic on her face. \"Please...\" I muttered. There was no breath. No heartbeat. Only silence."
+      "One filthy arm wrapped around her waist while the other crushed her wrist. Even through the dim candlelight I could see the panic on her face. \"Please...\" I muttered. There was no breath. No heartbeat. Only silence.",
     ],
     choices: [
       {
         label: "Kill them all. Burn it down. Leave nothing behind.",
-        flag: { s3: "burn" },
-        next: "s4",
-        reactionTitle: "Chapter 3-1 — Blood and Fire",
-        reaction: (path) => [
-          "Something inside me died beside her. The grief vanished so completely it frightened me. In its place came something cold.",
-          "I slowly laid Zinnia's body on the floor and kissed her forehead.",
-          path.s1 === "fire" ? "Tears streamed down my face as I looked back at the flames." : "I never looked back."
-        ]
+        flag: { s3_1: true },
+        next: "s3_1",
       },
       {
         label: "Don't make things worse. Stay calm and take the chance to escape. Run. Now.",
-        flag: { s3: "flee" },
-        next: "s4",
-        reaction: "I gathered our packs, mounted the horse, and rode into the dark without looking back."
-      }
-    ]
+        flag: { s3_3: true },
+        next: "s3_3",
+      },
+    ],
+  },
+
+  s3_1: {
+    title: "Chapter 3-1: Blood and Fire",
+    entries: (path) => [
+      "Something inside me died beside her. The grief vanished so completely it frightened me. In its place came something cold.",
+      "I slowly laid Zinnia's body on the floor and kissed her forehead.",
+      path.s1_2
+        ? "Tears streamed down my face as I looked back at the flames."
+        : "I never looked back.",
+    ],
+    choices: [{ label: "Continue...", flag: {}, next: "s4" }],
+  },
+
+  s3_3: {
+    title: "Chapter 3-3: Flee",
+    entries: [
+      "I gathered our packs, mounted the horse, and rode into the dark without looking back.",
+    ],
+    choices: [{ label: "Continue...", flag: {}, next: "s4" }],
   },
 
   s4: {
-    title: "Chapter 4 — A Fork in the Road",
+    title: "Chapter 4: A Fork in the Road",
     entries: [
       "The road splits east of the old boundary stones, and I stood there longer than I'll admit.",
-      "West led to Voxborough — a city stacked on itself, gang-ruled and hungry. The other led east, toward Withermarsh."
+      "West led to Voxborough — a city stacked on itself, gang-ruled and hungry. The other led east, toward Withermarsh.",
     ],
     choices: [
       {
         label: "Voxborough, the city in the west. Rebuild from nothing.",
-        flag: { path: "voxborough" },
-        next: "s5",
-        reaction: "I turned toward the noise and the smoke and the promise of a new name."
+        flag: { s4_1: true },
+        next: "s4_1",
       },
       {
         label: "East, toward Withermarsh, in shadow.",
-        flag: { path: "withermarsh" },
+        flag: { s4_2: true },
         next: "s4_2",
-        reaction: "I turned east instead, toward the quiet, toward whatever waited for me in Withermarsh."
-      }
-    ]
+      },
+    ],
+  },
+
+  s4_1: {
+    title: "Chapter 4-1: Voxborough",
+    entries: [
+      "I turned toward the noise and the smoke and the promise of a new name.",
+    ],
+    choices: [{ label: "Continue...", flag: {}, next: "s5" }],
   },
 
   s4_2: {
-    title: "Chapter 4-2 — Mercenary",
+    title: "Chapter 4-2: Mercenary",
     entries: [
       "Withermarsh was a town as muddy and unkept as its name implies, forever teetering on the edge of existence.",
-      "One day Captain Elias Vayne strolled in looking to band together mercenaries. He gave me a heavy stone hammer with a worn wooden handle."
+      "One day Captain Elias Vayne strolled in looking to band together mercenaries. He gave me a heavy stone hammer with a worn wooden handle.",
     ],
-    choices: [
-      {
-        label: "Continue...",
-        flag: {},
-        next: "s9_2",
-        skipReaction: true
-      }
-    ]
+    choices: [{ label: "Continue...", flag: {}, next: "s9_2" }],
   },
 
   s5: {
-    title: "Chapter 5 — Turf War",
+    title: "Chapter 5: Turf War",
     entries: [
       "Voxborough didn't care what I'd survived before it — only what I could survive now.",
-      "The trouble that mattered started over a girl — Camila, an artsy girl with big gorgeous eyes..."
+      "The trouble that mattered started over a girl — Camila, an artsy girl with big gorgeous eyes...",
     ],
     choices: [
       {
         label: "Save the girl, and make sure she gets home safe. She's cute...",
-        flag: { s5: "romance" },
-        next: "s6",
-        reactionTitle: "Chapter 5-1 — Color",
-        reaction: "I did not walk away once the danger passed. I walked her home. She smiled at me, and I felt something again."
+        flag: { s5_1: true },
+        next: "s5_1",
       },
       {
         label: "Do what's right. Fight off the thugs, but don't get attached.",
-        flag: { s5: "detached" },
-        next: "s6",
-        reaction: "I got her clear and made sure the debt collectors understood the cost. Attachment was a door I'd keep bolted."
-      }
-    ]
+        flag: { s5_2: true },
+        next: "s5_2",
+      },
+    ],
+  },
+
+  s5_1: {
+    title: "Chapter 5-1: Color",
+    entries: [
+      "I did not walk away once the danger passed. I walked her home. She smiled at me, and I felt something again.",
+    ],
+    choices: [{ label: "Continue...", flag: {}, next: "s6" }],
+  },
+
+  s5_2: {
+    title: "Chapter 5-2",
+    entries: [
+      "I got her clear and made sure the debt collectors understood the cost. Attachment was a door I'd keep bolted.",
+    ],
+    choices: [{ label: "Continue...", flag: {}, next: "s6" }],
   },
 
   s6: {
-    title: "Chapter 6 — The Raven or The Light",
+    title: "Chapter 6: The Raven or The Light",
     entries: [
       "I stood at a crossroads of three paths.",
-      "The Raven Queen stood on the left. In the center, the path was simple and straight. On the right, Lathander, god of the light."
+      "The Raven Queen stood on the left. In the center, the path was simple and straight. On the right, Lathander, god of the light.",
     ],
-    choices: (path) => {
-      return [
-        {
-          label: "Kneel to the Raven Queen. Swear the Oath of Vengeance.",
-          flag: { oath: "vengeance" },
-          next: "s7",
-          reaction: "I knelt in the ash, not the gold. Vengeance, I called it."
-        },
-        {
-          label: "Kneel to no one. Trust yourself.",
-          flag: { oath: "none" },
-          next: "s7",
-          reaction: "I stood between them and told them both the same thing: I don't need a god."
-        },
-        {
-          label: "Kneel to Lathander. Swear devotion to the light.",
-          flag: { oath: "devotion" },
-          next: "s7",
-          reaction: "I knelt in the gold instead of the ash. I swore to be a shield instead of only a blade."
-        }
-      ];
-    }
+    choices: [
+      {
+        label: "Kneel to the Raven Queen. Swear the Oath of Vengeance.",
+        flag: { s6_1: true },
+        next: "s6_1",
+      },
+      {
+        label: "Kneel to no one. Trust yourself.",
+        flag: { s6_2: true },
+        next: "s6_2",
+      },
+      {
+        label: "Kneel to Lathander. Swear devotion to the light.",
+        flag: { s6_3: true },
+        next: "s6_3",
+      },
+    ],
+  },
+
+  s6_1: {
+    title: "Chapter 6-1: Vengeance",
+    entries: ["I knelt in the ash, not the gold. Vengeance, I called it."],
+    choices: [{ label: "Continue...", flag: {}, next: "s7" }],
+  },
+  s6_2: {
+    title: "Chapter 6-2: Trust Yourself",
+    entries: ["I stood between them and told them both the same thing: I don't need a god."],
+    choices: [{ label: "Continue...", flag: {}, next: "s7" }],
+  },
+  s6_3: {
+    title: "Chapter 6-3: Devotion",
+    entries: ["I knelt in the gold instead of the ash. I swore to be a shield instead of only a blade."],
+    choices: [{ label: "Continue...", flag: {}, next: "s7" }],
   },
 
   s7: {
-    title: "Chapter 7 — The Call",
+    title: "Chapter 7: The Call",
     entries: [
-      "Work found me the way it always did. Rewin introduced me to a man named Elias, who said he was headed toward Withermarsh."
+      "Work found me the way it always did. Rewin introduced me to a man named Elias, who said he was headed toward Withermarsh.",
     ],
-    choices: (path) => {
-      return [
-        {
-          label: "Follow the rumor to Withermarsh.",
-          flag: { s7: "withermarsh_call" },
-          next: "s8",
-          reaction: "I told Elias I'd ride with him."
-        }
-      ];
-    }
+    choices: [
+      {
+        label: "Follow the rumor to Withermarsh.",
+        flag: { s7_1: true },
+        next: "s7_1",
+      },
+    ],
   },
 
-  end_elias_death: {
-    title: "Epilogue — The Mercenary's End",
-    entries: [
-      "They followed anyway. They found Elias first, and then Juno beside him, neither of them made it far enough to even see the wizard's camp.",
-      "Juno's journal ends at the bottom of this page, unfinished, the way so much of her life had been."
-    ],
-    choices: []
+  s7_1: {
+    title: "Chapter 7-1: The Ride",
+    entries: ["I told Elias I'd ride with him."],
+    choices: [{ label: "Continue...", flag: {}, next: "s8" }],
   },
-  
+
   s8: {
-    title: "Chapter 8 — Heaven and Horror",
+    title: "Chapter 8: Heaven and Horror",
     entries: (path) => {
-      const hammerName = path.oath === "devotion" ? "Justice" : path.oath === "vengeance" ? "Vengeance" : null;
+      const hammerName = path.s6_3 ? "Justice" : path.s6_1 ? "Vengeance" : null;
       return [
         "The smell of damp earth and rotting leaves hung thick in the night air as I crouched beneath the trees, watching the crumbling hovel through a cracked window.",
         "Inside, half a dozen cultists stood in a circle around a man tied to a wooden post. Flames licked at his bare feet while torches painted the walls in flickering orange light.",
@@ -820,286 +865,348 @@ const SCENES = {
       const opts = [
         {
           label: "Dion caught me off guard. Brush it off, for now at least.",
-          flag: { s8: "neutral" },
-          next: "s9_1",
-          reactionTitle: "Chapter 8-1",
-          reaction: "I brushed it off — for now, at least. Whatever Dion thought this was, I wasn't going to make it easy for him."
-        }
+          flag: { s8_1: true },
+          next: "s8_1",
+        },
       ];
-      if (path.s5 !== "romance") {
+      if (!path.s5_1) {
         opts.push({
           label: "I respect Dion's bold honesty, strength in battle, and that gorgeous hair…",
-          flag: { s8: "flirt" },
-          next: "s9_1",
-          reactionTitle: "Chapter 8-2 — Oh, Dion…",
-          reaction: [
-            "I let it happen. I let my guard down a little. On the way back to Withermarsh, I walked next to Dion and he told me of his past.",
-            "Dion said, \"My heart beats like a thousand war drums for you.\"",
-            "At the Hollow Hearth tavern, Cassian asked, \"How do you know when you've become the villain?\"",
-            "Dion scratched his beard. \"When you not ask that question.\"",
-            "Jaksyn: \"...Did Dion just out-philosophy all of us?\""
-          ]
+          flag: { s8_2: true },
+          next: "s8_2",
         });
       }
-      if (path.s5 === "romance") {
+      if (path.s5_1) {
         opts.push({
           label: "Oh, hell no. Men are pigs. I have to shut them all down if they're going to take me seriously.",
-          flag: { s8: "shutdown" },
-          next: "s9_1",
-          reactionTitle: "Chapter 8-3 — Nope!",
-          reaction: "I'm not interested in you, or any man. Save yourself the trouble — unless you want a hammer to the face, but I'd rather save that for the cultists."
+          flag: { s8_3: true },
+          next: "s8_3",
         });
       }
       return opts;
-    }
+    },
+  },
+
+  s8_1: {
+    title: "Chapter 8-1",
+    entries: [
+      "I brushed it off — for now, at least. Whatever Dion thought this was, I wasn't going to make it easy for him.",
+    ],
+    choices: [{ label: "Continue...", flag: {}, next: "s9_1" }],
+  },
+  s8_2: {
+    title: "Chapter 8-2: Oh, Dion…",
+    entries: [
+      "I let it happen. I let my guard down a little. On the way back to Withermarsh, I walked next to Dion and he told me of his past.",
+      "Dion said, \"My heart beats like a thousand war drums for you.\"",
+      "At the Hollow Hearth tavern, Cassian asked, \"How do you know when you've become the villain?\"",
+      "Dion scratched his beard. \"When you not ask that question.\"",
+      "Jaksyn: \"...Did Dion just out-philosophy all of us?\"",
+    ],
+    choices: [{ label: "Continue...", flag: {}, next: "s9_1" }],
+  },
+  s8_3: {
+    title: "Chapter 8-3: Nope!",
+    entries: [
+      "I'm not interested in you, or any man. Save yourself the trouble — unless you want a hammer to the face, but I'd rather save that for the cultists.",
+    ],
+    choices: [{ label: "Continue...", flag: {}, next: "s9_1" }],
   },
 
   s9_1: {
-    title: "Chapter 9-1 — Withermarsh",
+    title: "Chapter 9-1: Withermarsh",
     entries: [
       "Withermarsh was a town as muddy and unkept as its name implies, forever teetering on the edge of existence, barely more than a trading post in the rural wild of Kjlovania.",
       "We met up with old Rewin and Captain Elias at the Hollow Hearth tavern in Withermarsh. For the next few days we investigated other strange happenings around the area and did a few errands for Elias.",
       "We eventually learned that the wizard Sylvanas was behind several attacks on the trade routes. Enough was enough, and it was time to deal with him.",
       "Elias had us pinned down at the Hollow Hearth, pushing us to deal with his dirty work. He introduced that creepy Hooded Stranger and laid out the plan: meet at first light, storm the Eldritch Tower, and take down Sylvanus. My gut screamed that the whole thing was a setup, and looking at the rest of this ragtag group, I wasn't alone. Leif and I agreed—we were being steered like cattle, and I hated every second of it.",
-      "We met in the morning, but Elias didn't show. He left a note instead, “Went on ahead. Meet you there. -Elias”  ",
-      "Leif quipped, “See? I told you we couldn't trust them!” ",
-      "I responded, “We'll know we can trust them if they're dead.”  ",
-      "When we arrived at the tower, Sylvanus was waiting in the yard, acting like he was some master manipulator, but we proved him wrong. It was a messy fight, but we finally found our rhythm. Dion landed the killing blow—shouting my name, as if that would make me swoon—and the wizard fell. ",
-      "Cassian found and pulled Elias’s body from the wreckage; the guy was burned to a crisp, the Hooded Stranger too. As I stood there in the silence, watching Dorian burn the bodies, we scavenged what was left. Among the items were a black iron key and a letter to Lord Adrian in Braxia. It was an endorsement, the golden ticket to get us into the city. Whatever Elias was planning, it died with him, but the road led straight to Braxia. That’s where we were headed next. "
+      "We met in the morning, but Elias didn't show. He left a note instead, \"Went on ahead. Meet you there. -Elias\"",
+      "Leif quipped, \"See? I told you we couldn't trust them!\"",
+      "I responded, \"We'll know we can trust them if they're dead.\"",
+      "When we arrived at the tower, Sylvanus was waiting in the yard, acting like he was some master manipulator, but we proved him wrong. It was a messy fight, but we finally found our rhythm. Dion landed the killing blow—shouting my name, as if that would make me swoon—and the wizard fell.",
+      "Cassian found and pulled Elias's body from the wreckage; the guy was burned to a crisp, the Hooded Stranger too. As I stood there in the silence, watching Dorian burn the bodies, we scavenged what was left. Among the items were a black iron key and a letter to Lord Adrian in Braxia. It was an endorsement, the golden ticket to get us into the city. Whatever Elias was planning, it died with him, but the road led straight to Braxia. That's where we were headed next.",
     ],
-    choices: [
-      {
-        label: "Continue toward Braxia...",
-        flag: {},
-        next: "s10",
-        skipReaction: true
-      }
-    ]
+    choices: [{ label: "Continue toward Braxia...", flag: {}, next: "s10" }],
   },
 
   s9_2: {
-    title: "Chapter 9-2 — Sylvanas",
+    title: "Epilogue 9-2",
     entries: [
       "We learned from the seven adventurers' scouting that the wizard Sylvanas was behind several attacks on the trade routes. Enough was enough, and it was time to deal with him. \"You trust these guys to deal with a wizard, Elias?\" I asked him.",
       "\"I think their intentions are mostly good… but you're right. It's a delicate situation. The wizard is also the brother of a friend of mine. Let's leave early and see if we can reason with him.\"",
       "Elias woke me in the middle of the night, and I left a note for the seven newcomers.",
-      "\"Went on ahead. Meet you there. -Juno\""
+      "\"Went on ahead. Meet you there. -Juno\"",
+      "They followed anyway. They found Elias first, and then Juno beside him, neither of them made it far enough to even see the wizard's camp.",
+      "Juno's journal ends at the bottom of this page, unfinished, the way so much of her life had been.",
+      "THE END",
     ],
-    choices: [
-      {
-        label: "Continue...",
-        flag: {},
-        next: "end_elias_death",
-        skipReaction: true
-      }
-    ]
+    choices: [],
   },
 
   s10: {
-    title: "Chapter 10 — Braxia",
+    title: "Chapter 10: Braxia",
     entries: [
-      "Lord Adrian, ruler of Braxia, sent his emissary to invite us to a masked dinner party… and I knew we would likely have to face Azmekal soon. I was prepared to face death and had no fear of it.",
-      "I didn't know how many days I had left, and I considered if maybe I should make the most of the night before it's my last."
+      "Lord Adrian, ruler of Braxia, sent his emissary to invite us to a masked dinner party… and I knew we would likely have to face Azmekal soon. I was prepared to face death and had no fear of it. My hope was that it would be in honor, and worth the sacrifice to bring down the Crimson Sun and its evil patriarchy. I didn't know how many days I had left, and I considered if maybe I should make the most of the night before it's my last.",
     ],
     choices: (path) => {
       const opts = [
         {
           label: "Get some rest. Be ready for anything tomorrow. Besides, I don't need no man.",
-          flag: { romance: "none" },
-          next: "s11",
-          reaction: "I told myself the truth: I didn't need any of them, not that way."
-        }
+          flag: { s10_1: true },
+          next: "s10_1",
+        },
       ];
-      if (path.s8 !== "shutdown") {
+      if (!path.s8_3) {
         opts.push({
-          label: "Invite Dion to my room. That untamed romantic has shown his devotion.",
-          flag: { romance: "dion" },
-          next: "s11",
-          reaction: "If it was going to happen, it should be tonight."
+          label: "Invite Dion to my room. That untamed romantic has shown his devotion. If it's going to happen, it should be tonight.",
+          flag: { s10_2: true },
+          next: "s10_2",
         });
       }
-      if (path.s8 === "neutral") {
+      if (path.s8_1) {
         opts.push({
           label: "One night with Gabriel. He won't make it out to be more than it is.",
-          flag: { romance: "gabriel" },
-          next: "s11",
-          reaction: "Gabriel never once made it complicated, which was exactly why I said yes."
+          flag: { s10_3: true },
+          next: "s10_3",
         });
       }
       // TODO: your notes list identical conditions (8-1 and 5-2 and 6-3) for both
       // Saberic and Dorian below — double check which one was meant to differ.
-      if (path.s8 === "neutral" && path.s5 === "detached" && path.oath === "devotion") {
+      if (path.s8_1 && path.s5_2 && path.s6_3) {
         opts.push({
-          label: "Sir Saberic, the Redemption Paladin. He understands me.",
-          flag: { romance: "saberic" },
-          next: "s11",
-          reaction: "Two paladins in love would be an unbreakable bond."
+          label: "Sir Saberic, the Redemption Paladin. He understands me. Two paladins in love would be an unbreakable bond.",
+          flag: { s10_4: true },
+          next: "s10_4",
         });
       }
-      if (path.s8 === "neutral" && path.s5 === "detached" && path.oath === "devotion") {
+      if (path.s8_1 && path.s5_2 && path.s6_3) {
         opts.push({
           label: "Go to Dorian. His heart is good, which might be the rarest thing in this world.",
-          flag: { romance: "dorian" },
-          next: "s11",
-          reaction: "His heart was good. That might be the rarest thing in this world."
+          flag: { s10_5: true },
+          next: "s10_5",
         });
       }
-      if (path.s8 === "neutral" && path.s5 !== "romance" && path.oath !== "devotion") {
+      if (path.s8_1 && !path.s5_1 && !path.s6_3) {
         opts.push({
           label: "Invite Jaksyn to my room. I'm certain it will be a night to remember.",
-          flag: { romance: "jaksyn" },
-          next: "s11",
-          reaction: "It was only meant to be one night."
+          flag: { s10_6: true },
+          next: "s10_6",
         });
       }
-      if (path.s8 === "neutral" && path.oath !== "devotion") {
+      if (path.s8_1 && !path.s6_3) {
         opts.push({
-          label: "Go to Leif. He feels unusually familiar…",
-          flag: { romance: "leif" },
-          next: "s11",
-          reaction: "He was the only one who understood there was no one we could trust. Which was exactly why I trusted him more than the rest."
+          label: "Go to Leif. He is the only one who understands there is no one we can trust, which is exactly why I trust him more than the rest. Plus, he feels unusually familiar…",
+          flag: { s10_7: true },
+          next: "s10_7",
         });
       }
-      if (path.s8 === "neutral" && path.s5 !== "romance" && path.oath !== "devotion") {
+      if (path.s8_1 && !path.s5_1 && !path.s6_3) {
         opts.push({
           label: "Pounce on Cassian and go wild!",
-          flag: { romance: "cassian" },
-          next: "s11",
-          reaction: "Something about the danger in him felt honest, in a house full of people wearing masks even before the party started."
+          flag: { s10_8: true },
+          next: "s10_8",
         });
       }
       return opts;
-    }
+    },
+  },
+
+  s10_1: {
+    title: "Chapter 10-1: Alone",
+    entries: ["I told myself the truth: I didn't need any of them, not that way."],
+    choices: [{ label: "Continue...", flag: {}, next: "s11" }],
+  },
+  s10_2: {
+    title: "Chapter 10-2: Dion",
+    entries: ["If it was going to happen, it should be tonight."],
+    choices: [{ label: "Continue...", flag: {}, next: "s11" }],
+  },
+  s10_3: {
+    title: "Chapter 10-3: Gabriel",
+    entries: ["Gabriel never once made it complicated, which was exactly why I said yes."],
+    choices: [{ label: "Continue...", flag: {}, next: "s11" }],
+  },
+  s10_4: {
+    title: "Chapter 10-4: Saberic",
+    entries: ["Two paladins in love would be an unbreakable bond."],
+    choices: [{ label: "Continue...", flag: {}, next: "s11" }],
+  },
+  s10_5: {
+    title: "Chapter 10-5: Dorian",
+    entries: ["His heart was good. That might be the rarest thing in this world."],
+    choices: [{ label: "Continue...", flag: {}, next: "s11" }],
+  },
+  s10_6: {
+    title: "Chapter 10-6: Jaksyn",
+    entries: ["It was only meant to be one night."],
+    choices: [{ label: "Continue...", flag: {}, next: "s11" }],
+  },
+  s10_7: {
+    title: "Chapter 10-7: Leif",
+    entries: [
+      "He was the only one who understood there was no one we could trust. Which was exactly why I trusted him more than the rest.",
+    ],
+    choices: [{ label: "Continue...", flag: {}, next: "s11" }],
+  },
+  s10_8: {
+    title: "Chapter 10-8: Cassian",
+    entries: [
+      "Something about the danger in him felt honest, in a house full of people wearing masks even before the party started.",
+    ],
+    choices: [{ label: "Continue...", flag: {}, next: "s11" }],
   },
 
   s11: {
-    title: "Chapter 11 — The Feast of Masks",
+    title: "Chapter 11: The Feast of Masks",
     entries: [
-      "Cassian lost control the moment he saw Archbishop Corvinus across the hall. He went for him. The Justicars closed in before any of us could stop it."
+      "Cassian lost control the moment he saw Archbishop Corvinus across the hall. He went for him. The Justicars closed in before any of us could stop it.",
     ],
     choices: (path) => {
-      if (path.oath === "none" && path.romance === "leif") {
+      if (path.s6_2 && path.s10_7) {
         return [
           {
             label: "Run. Get out with Leif while you still can.",
-            flag: { s11: "escape" },
-            next: (p) => (p.s1 === "stone" ? "end_leif_happy" : "end_leif_war"),
-            reaction: "We ran. Behind us, the feast dissolved into screaming."
+            flag: { s11_1: true },
+            next: "s11_1",
           },
           {
             label: "Stay and fight for the others.",
-            flag: { s11: "fight" },
-            next: "end_tpk",
-            reaction: "We fought. It wasn't enough."
-          }
+            flag: { s11_2: true },
+            next: "s11_2",
+          },
         ];
       }
-      if (["jaksyn", "cassian", "dorian"].includes(path.romance)) {
-        return [
-          {
-            label: "Continue...",
-            flag: {},
-            next: "end_tpk_leif_escapes",
-            skipReaction: true
-          }
-        ];
+      if (path.s10_6 || path.s10_8 || path.s10_5) {
+        return [{ label: "Continue...", flag: {}, next: "s11_leif_escapes" }];
       }
-      return [
-        {
-          label: "Continue...",
-          flag: {},
-          next: "s12",
-          skipReaction: true
-        }
-      ];
-    }
+      return [{ label: "Continue...", flag: {}, next: "s12" }];
+    },
+  },
+
+  s11_1: {
+    title: "Chapter 11-1",
+    entries: ["We ran. Behind us, the feast dissolved into screaming."],
+    choices: [
+      {
+        label: "Continue...",
+        flag: {},
+        next: (p) => (p.s1_1 && p.s6_2 ? "s11_1_1" : "s11_1_2"),
+      },
+    ],
+  },
+
+  s11_1_1: {
+    title: "Epilogue 11-1-1",
+    entries: [
+      "The rarest gem stays hidden beneath the mountain for eternity.",
+      "Juno and Leif live out their lives hidden away from the wars of Kjlovania.",
+      "Congratulations, I think… Juno lived out the remainder of her days in the life she chose.",
+      "THE END",
+    ],
+    choices: [],
+  },
+
+  s11_1_2: {
+    title: "Epilogue 11-1-2",
+    entries: [
+      "The river never ceases to flow, carving through the mountain, deeper and deeper until it reaches the sea.",
+      "Juno and Leif try to live out their lives hidden away from the wars of Kjlovania, but Juno eventually gives in to her conscience eating her up on the inside. She goes off to the fight, and dies.",
+      "Congratulations, almost… Juno could not live with her choices. The war within her, just as the war without, ate her up.",
+      "THE END",
+    ],
+    choices: [],
+  },
+
+  s11_2: {
+    title: "Epilogue 11-2",
+    entries: [
+      "We fought. It wasn't enough. Every one of us went down before the night was through.",
+      "THE END",
+    ],
+    choices: [],
+  },
+
+  s11_leif_escapes: {
+    title: "Epilogue 11",
+    entries: [
+      "The rest of the party was killed or captured in the chaos. Only Leif slipped into the shadows, never to be heard from again.",
+      "THE END",
+    ],
+    choices: [],
   },
 
   s12: {
-    title: "Chapter 12 — Azmekal",
+    title: "Chapter 12: Azmekal",
     entries: [
-      "Vera Morningstar had been taken, infected with the Wither for what she'd done to save Cassian. Grief aside, there was no time — Lord Adrian's alliance was struck, and Azmekal waited beneath Braxia."
+      "Vera Morningstar had been taken, infected with the Wither for what she'd done to save Cassian. Grief aside, there was no time — Lord Adrian's alliance was struck, and Azmekal waited beneath Braxia.",
     ],
     choices: (path) => {
-      if (path.oath === "vengeance" && path.romance === "dion") {
-        return [{ label: "Continue...", flag: {}, next: "s13", skipReaction: true }];
+      if (path.s6_1 && path.s10_2) {
+        return [{ label: "Continue...", flag: {}, next: "s13" }];
       }
-      if (path.oath === "devotion" && path.romance === "saberic") {
-        return [{ label: "Continue...", flag: {}, next: "s13", skipReaction: true }];
+      if (path.s6_3 && path.s10_4) {
+        return [{ label: "Continue...", flag: {}, next: "s13" }];
       }
-      return [{ label: "Continue...", flag: {}, next: "end_azmekal_fall", skipReaction: true }];
-    }
+      return [{ label: "Continue...", flag: {}, next: "s12_fail" }];
+    },
+  },
+
+  s12_fail: {
+    title: "Epilogue 12",
+    entries: [
+      "Azmekal did not fall. He wiped us out beneath Braxia's streets, and Xavier was resurrected using Vera's body. The undead now run rampant across Kjlovania.",
+      "THE END",
+    ],
+    choices: [],
   },
 
   s13: {
-    title: "Chapter 13 — Brekka",
+    title: "Chapter 13: Brekka",
     entries: [
-      "The frozen throne of Brekka waited beneath a dying sky. Somewhere below it, the werewolf demon lord Hrathgar was already waiting for us."
+      "The frozen throne of Brekka waited beneath a dying sky. Somewhere below it, the werewolf demon lord Hrathgar was already waiting for us.",
     ],
     choices: (path) => {
-      if (path.oath === "vengeance") {
-        return [{ label: "Challenge Hrathgar. Buy them the time they need.", flag: {}, next: "end_vengeance_victory", skipReaction: true }];
+      if (path.s6_1) {
+        return [{ label: "Challenge Hrathgar. Buy them the time they need.", flag: {}, next: "s13_1" }];
       }
-      if (path.oath === "devotion" && path.romance === "saberic") {
-        return [{ label: "Stand together.", flag: {}, next: "end_devotion_victory", skipReaction: true }];
+      if (path.s6_3 && path.s10_4) {
+        return [{ label: "Stand together.", flag: {}, next: "s13_2" }];
       }
-      return [{ label: "Continue...", flag: {}, next: "end_azmekal_fall", skipReaction: true }];
-    }
+      return [{ label: "Continue...", flag: {}, next: "s13_3" }];
+    },
   },
 
-  end_leif_happy: {
-    title: "Epilogue — The Quiet Years",
-    entries: [
-      "We stayed unknown, taking odd jobs, far from Xavier's war. Days happy together. It was more than I ever thought I'd get."
-    ],
-    choices: []
-  },
-  end_leif_war: {
-    title: "Epilogue — The Pull Back",
-    entries: [
-      "For a while it was enough. Then the fire in me pulled me back toward the fight, and I left him. Leif heard word of my death in battle against Xavier's army not long after."
-    ],
-    choices: []
-  },
-  end_tpk: {
-    title: "Epilogue — The Feast Ends in Blood",
-    entries: [
-      "We fought. Every one of us went down before the night was through."
-    ],
-    choices: []
-  },
-  end_tpk_leif_escapes: {
-    title: "Epilogue — The One Who Slipped Away",
-    entries: [
-      "The rest of the party was killed or captured in the chaos. Only Leif slipped into the shadows, never to be heard from again."
-    ],
-    choices: []
-  },
-  end_azmekal_fall: {
-    title: "Epilogue — The Undead Reign",
-    entries: [
-      "Azmekal did not fall. He wiped us out beneath Braxia's streets, and Xavier was resurrected using Vera's body. The undead now run rampant across Kjlovania."
-    ],
-    choices: []
-  },
-  end_vengeance_victory: {
-    title: "Epilogue — What Vengeance Bought",
+  s13_1: {
+    title: "Epilogue 13-1",
     entries: [
       "I challenged Hrathgar myself, a distraction while the others rallied a band of rebel werewolves to overthrow him. Xavier was resurrected using Vera's captured body anyway. Jaksyn died in that battle.",
-      "But the six who remained went on to stop Xavier for good, defeating every demon lord in his service. Kjlovania was torn apart by war — but in the end, evil was stopped. Congratulations."
+      "But the six who remained went on to stop Xavier for good, defeating every demon lord in his service. Kjlovania was torn apart by war — but in the end, evil was stopped. Congratulations.",
+      "THE END",
     ],
-    choices: []
+    choices: [],
   },
-  end_devotion_victory: {
-    title: "Epilogue — The Dawn Holds",
+
+  s13_2: {
+    title: "Epilogue 13-2",
     entries: [
       "We stood together and defeated Hrathgar, then went on to prevent Xavier's resurrection on the blood moon entirely. The Crimson Sun began to fall apart.",
-      "The heroes continued to watch over Kjlovania in an era of peace — though none of us ever fully rested. Xavier might rise again one day. Congratulations."
+      "The heroes continued to watch over Kjlovania in an era of peace — though none of us ever fully rested. Xavier might rise again one day. Congratulations.",
+      "THE END",
     ],
-    choices: []
-  }
+    choices: [],
+  },
 
-}
+  s13_3: {
+    // Note: per your outline this branch should not actually be reachable —
+    // kept only as a defensive fallback.
+    title: "Epilogue 13-3",
+    entries: [
+      "The heroes fell. Xavier took over Kjlovania.",
+      "THE END",
+    ],
+    choices: [],
+  },
+};
 </script>
 
 <header>
