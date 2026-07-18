@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Juno's Journal</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<script>
+const SAVE_KEY = "junoJournalSave";
+
+let currentScene = "s1";
+let path = {};
+let reaction = null;
+let pendingScene = null;
+
+function render() {
+    const scene = SCENES[currentScene];
+    chapter.textContent = reaction
+        ? reaction.title || "The Ink Settles"
+        : scene.title;
+    renderStory(scene);
+    renderChoices(scene);
+    saveGame();
+}
+
+function renderStory(scene){
+    story.innerHTML = "";
+    const paragraphs = reaction
+        ? reaction.text
+        : resolve(scene.entries);
+    paragraphs.forEach(text=>{
+        const p = document.createElement("p");
+        p.textContent = text;
+        if(story.children.length===0)
+            p.classList.add("opening");
+        story.appendChild(p);
+    });
+}
+
+
+function renderChoices(scene){
+
+    choices.innerHTML="";
+
+    if(reaction){
+
+        const button=document.createElement("button");
+
+        button.textContent="Turn the Page";
+
+        button.onclick=nextScene;
+
+        choices.appendChild(button);
+
+        return;
+
+    }
+
+    const list=resolve(scene.choices);
+
+    list.forEach(choice=>{
+
+        const button=document.createElement("button");
+
+        button.className="choice";
+
+        button.textContent=choice.label;
+
+        button.onclick=()=>selectChoice(choice);
+
+        choices.appendChild(button);
+
+    });
+
+}
+
+function selectChoice(choice){
+
+    Object.assign(path, choice.flag);
+
+    // Skip reaction pages
+    if(choice.skipReaction){
+
+        currentScene = resolve(choice.next);
+
+        reaction = null;
+
+        pendingScene = null;
+
+        render();
+
+        return;
+
+    }
+
+    reaction = {
+
+        title: choice.reactionTitle,
+
+        text: Array.isArray(resolve(choice.reaction))
+            ? resolve(choice.reaction)
+            : [resolve(choice.reaction)]
+
+    };
+
+    pendingScene = resolve(choice.next);
+
+    render();
+
+}
+
+function nextScene(){
+
+    currentScene=pendingScene;
+
+    reaction=null;
+
+    pendingScene=null;
+
+    render();
+
+}
+
+function restartJournal(){
+
+    if(!confirm("Start the journal over?"))
+        return;
+
+    currentScene="s1";
+
+    path={};
+
+    reaction=null;
+
+    pendingScene=null;
+
+    saveGame();
+
+    render();
+
+}
+
+function saveGame(){
+
+    localStorage.setItem(
+
+        SAVE_KEY,
+
+        JSON.stringify({
+
+            scene:currentScene,
+
+            path:path,
+
+            reaction:reaction,
+
+            pending:pendingScene
+
+        })
+
+    );
+
+}
+
+function loadGame(){
+
+    const save=localStorage.getItem(SAVE_KEY);
+
+    if(!save)
+        return;
+
+    const data=JSON.parse(save);
+
+    currentScene=data.scene;
+
+    path=data.path;
+
+    reaction=data.reaction;
+
+    pendingScene=data.pending;
+
+}
+
+function resolve(value){
+
+    if(typeof value==="function")
+        return value(path);
+
+    return value;
+
+}
+
+
+</script>
+
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        }
+
+        body{
+
+        background:
+        radial-gradient(circle at top,#2b241d,#0d0907 70%);
+
+        font-family:"Cormorant Garamond",serif;
+
+        color:#241b12;
+
+        display:flex;
+
+        justify-content:center;
+
+        padding:40px 20px;
+
+        min-height:100vh;
+
+        }
+
+        /* ---------- Journal ---------- */
+
+        #journal{
+
+        width:100%;
+
+        max-width:900px;
+
+        }
+
+        /* ---------- Header ---------- */
+
+        header{
+
+        text-align:center;
+
+        margin-bottom:30px;
+
+        }
+
+        header h1{
+
+        font-family:"Cinzel",serif;
+
+        font-size:3rem;
+
+        color:#9f0f33;
+
+        letter-spacing:1px;
+
+        margin-bottom:10px;
+
+        }
+
+        header h2{
+
+        font-style:italic;
+
+        font-weight:500;
+
+        font-size:1.8rem;
+
+        color:#c7a15a;
+
+        margin-bottom:25px;
+
+        }
+
+        #symbols{
+
+        display:flex;
+
+        justify-content:center;
+
+        gap:40px;
+
+        font-size:1.4rem;
+
+        color:#74695c;
+
+        }
+
+        /* ---------- Page ---------- */
+
+        #page{
+
+        background:
+        linear-gradient(
+        180deg,
+        #efe3bf,
+        #e8d9b2
+        );
+
+        padding:80px;
+
+        position:relative;
+
+        box-shadow:
+
+        0 30px 80px rgba(0,0,0,.65);
+
+        }
+
+        /* torn top */
+
+        #page::before{
+
+        content:"";
+
+        position:absolute;
+
+        left:0;
+
+        top:-22px;
+
+        width:100%;
+
+        height:26px;
+
+        background:
+
+        repeating-linear-gradient(
+
+        -45deg,
+
+        transparent 0px,
+
+        transparent 22px,
+
+        #efe3bf 22px,
+
+        #efe3bf 44px
+
+        );
+
+        }
+
+        /* ---------- Chapter ---------- */
+
+        #chapter{
+
+        font-family:"Cinzel",serif;
+
+        font-size:2.6rem;
+
+        color:#9f0f33;
+
+        line-height:1.3;
+
+        margin-bottom:60px;
+
+        }
+
+        /* ---------- Story ---------- */
+
+        #story{
+
+        font-size:2rem;
+
+        line-height:1.9;
+
+        }
+
+        #story p{
+
+        margin-bottom:42px;
+
+        }
+
+        .opening{
+
+        font-style:italic;
+
+        font-size:2.3rem;
+
+        }
+
+        /* ---------- Buttons ---------- */
+
+        #choices{
+
+        margin-top:60px;
+
+        }
+
+        #choices button{
+
+        background:#40251b;
+
+        color:white;
+
+        font-family:"Cinzel";
+
+        border:none;
+
+        padding:
+
+        18px
+
+        42px;
+
+        font-size:1rem;
+
+        letter-spacing:2px;
+
+        cursor:pointer;
+
+        transition:.25s;
+
+        }
+
+        #choices button:hover{
+
+        background:#6d1c31;
+
+        transform:translateY(-2px);
+
+        }
+
+        footer{
+
+        margin-top:20px;
+
+        text-align:center;
+
+        }
+
+        #restart{
+
+        background:none;
+
+        border:none;
+
+        color:#999;
+
+        font-style:italic;
+
+        font-size:1.05rem;
+
+        cursor:pointer;
+
+        }
+
+        #restart:hover{
+
+        color:white;
+
+        }
+
+        /* ---------- Mobile ---------- */
+
+        @media(max-width:700px){
+
+        header h1{
+
+        font-size:2.3rem;
+
+        }
+
+        header h2{
+
+        font-size:1.3rem;
+
+        }
+
+        #page{
+
+        padding:40px 28px;
+
+        }
+
+        #chapter{
+
+        font-size:2rem;
+
+        }
+
+        #story{
+
+        font-size:1.6rem;
+
+        }
+
+        .opening{
+
+        font-size:1.9rem;
+
+        }
+
+        }
+
+</style>
+
+</head>
+
+<body>
+
+<div id="journal">
+
+<script>
+// ---------- STORY DATA ----------
+const SCENES = {
+  s1: {
+    title: "Chapter 1 — Seven Lashings",
+    entries: [
+      "April 1737",
+      "His shadow loomed over me as I scrubbed the monastery floor on my hands and knees. The smell of waxed oak was overpowered by soap and spilled wine. A leather strap came down against my back with a loud crack. Already, bruises and scars had formed on my back, and this holy priest of the Crimson Sun intended to add another layer.",
+      "Destiny shifts with every choice.",
+    ],
+    choices: [
+      {
+        label: "Remain a rock. Strong, calm, and unyielding. Give him nothing.",
+        flag: { s1: "stone" },
+        next: "s2",
+        reaction:
+          "I did not cry out. I would not give him that coin to spend. I let my jaw lock and my eyes go flat as river stone, and somewhere in that silence I found the first shape of the woman I'd become — the one who does not break where others can see.",
+      },
+      {
+        label: "Fight fire with fire. Scream. Make your pain echo in the back of his mind for nights to come. Give him doubts.",
+        flag: { s1: "fire" },
+        next: "s2",
+        reaction:
+          "I screamed. I clawed. I looked him dead in the eye and let him see that I would remember every second of this, that I would carry it forward like a blade with his name etched into the steel. If I was going to hurt, he was going to lie awake wondering when I'd come to collect.",
+      },
+    ],
+  },
+
+  s2: {
+    title: "Chapter 2 — Zinnia",
+    entries: [
+      "We'd dreamed about leaving for years — the two of us, whispering it into the dark of the stable where it was safe to want things out loud. Zinnia was the one who kept the dream alive when I wanted to let it die. She had a way of collecting hope like other children collected pebbles, and she never seemed to run out. She was the smart one, optimistic, and compassionate. The world was darker in my eyes.",
+      "The church called us wards. Called it discipline when they beat us, called themselves our betters. What we were, plainly, were two girls whose parents had vanished somewhere in the years before memory, left in the keeping of people who found God easier to preach than to practice.",
+      "Zinnia delicately looked under the bandage on her arm. The skin was raw and pink yet healing. \"We will get out of here, Zee,\" I said decisively.\n\"When and how?\" she asked.",
+    ],
+    choices: [
+      {
+        label: "Run tonight. We have nothing but each other — that has to be enough. No more beatings. No drunken clergy.",
+        flag: { escape: "night", path: "withermarsh" },
+        next: "s4_2",
+        reactionTitle: "Chapter 2-1 — Run Together",
+        reaction: [
+          "We went east. The road was hard. Zinnia came down with a fever she could not shake.",
+          "We finally made it to a town called Withermarsh, but it wasn't enough. It was too late for their backwoods medicine.",
+          "Zinnia died as I knelt beside her bed.",
+        ],
+      },
+      {
+        label: "Wait. Plan it. Rations, the horses, a real chance at the road.",
+        flag: { escape: "planned" },
+        next: "s3",
+        skipReaction: true,
+      },
+    ],
+  },
+
+  s3: {
+    title: "Chapter 3 — A Flower Falls",
+    entries: [
+      "For weeks, Zinnia and I stole our freedom one handful at a time.",
+      "Every day we carried a little more to the stable until we had enough to survive. Every day we also battered the front door's lock against the frame as we came and went...",
+      "One filthy arm wrapped around her waist while the other crushed her wrist. Even through the dim candlelight I could see the panic on her face. \"Please...\" I muttered. There was no breath. No heartbeat. Only silence."
+    ],
+    choices: [
+      {
+        label: "Kill them all. Burn it down. Leave nothing behind.",
+        flag: { s3: "burn" },
+        next: "s4",
+        reactionTitle: "Chapter 3-1 — Blood and Fire",
+        reaction: (path) => [
+          "Something inside me died beside her. The grief vanished so completely it frightened me. In its place came something cold.",
+          "I slowly laid Zinnia's body on the floor and kissed her forehead.",
+          path.s1 === "fire" ? "Tears streamed down my face as I looked back at the flames." : "I never looked back."
+        ]
+      },
+      {
+        label: "Don't make things worse. Stay calm and take the chance to escape. Run. Now.",
+        flag: { s3: "flee" },
+        next: "s4",
+        reaction: "I gathered our packs, mounted the horse, and rode into the dark without looking back."
+      }
+    ]
+  },
+
+  s4: {
+    title: "Chapter 4 — A Fork in the Road",
+    entries: [
+      "The road splits east of the old boundary stones, and I stood there longer than I'll admit.",
+      "West led to Voxborough — a city stacked on itself, gang-ruled and hungry. The other led east, toward Withermarsh."
+    ],
+    choices: [
+      {
+        label: "Voxborough, the city in the west. Rebuild from nothing.",
+        flag: { path: "voxborough" },
+        next: "s5",
+        reaction: "I turned toward the noise and the smoke and the promise of a new name."
+      },
+      {
+        label: "East, toward Withermarsh, in shadow.",
+        flag: { path: "withermarsh" },
+        next: "s4_2",
+        reaction: "I turned east instead, toward the quiet, toward whatever waited for me in Withermarsh."
+      }
+    ]
+  },
+
+  s4_2: {
+    title: "Chapter 4-2 — Mercenary",
+    entries: [
+      "Withermarsh was a town as muddy and unkept as its name implies, forever teetering on the edge of existence.",
+      "One day Captain Elias Vayne strolled in looking to band together mercenaries. He gave me a heavy stone hammer with a worn wooden handle."
+    ],
+    choices: [
+      {
+        label: "Continue...",
+        flag: {},
+        next: "end_elias_death",
+        skipReaction: true
+      }
+    ]
+  },
+
+  s5: {
+    title: "Chapter 5 — Turf War",
+    entries: [
+      "Voxborough didn't care what I'd survived before it — only what I could survive now.",
+      "The trouble that mattered started over a girl — Camila, an artsy girl with big gorgeous eyes..."
+    ],
+    choices: [
+      {
+        label: "Save the girl, and make sure she gets home safe. She's cute...",
+        flag: { s5: "romance" },
+        next: "s6",
+        reactionTitle: "Chapter 5-1 — Color",
+        reaction: "I did not walk away once the danger passed. I walked her home. She smiled at me, and I felt something again."
+      },
+      {
+        label: "Do what's right. Fight off the thugs, but don't get attached.",
+        flag: { s5: "detached" },
+        next: "s6",
+        reaction: "I got her clear and made sure the debt collectors understood the cost. Attachment was a door I'd keep bolted."
+      }
+    ]
+  },
+
+  s6: {
+    title: "Chapter 6 — The Raven or The Light",
+    entries: [
+      "I stood at a crossroads of three paths.",
+      "The Raven Queen stood on the left. In the center, the path was simple and straight. On the right, Lathander, god of the light."
+    ],
+    choices: (path) => {
+      return [
+        {
+          label: "Kneel to the Raven Queen. Swear the Oath of Vengeance.",
+          flag: { oath: "vengeance" },
+          next: "s7",
+          reaction: "I knelt in the ash, not the gold. Vengeance, I called it."
+        },
+        {
+          label: "Kneel to no one. Trust yourself.",
+          flag: { oath: "none" },
+          next: "s7",
+          reaction: "I stood between them and told them both the same thing: I don't need a god."
+        }
+      ];
+    }
+  },
+
+  s7: {
+    title: "Chapter 7 — The Call",
+    entries: [
+      "Work found me the way it always did. Rewin introduced me to a man named Elias, who said he was headed toward Withermarsh."
+    ],
+    choices: (path) => {
+      return [
+        {
+          label: "Follow the rumor to Withermarsh.",
+          flag: { s7: "withermarsh_call" },
+          next: "end_elias_death",
+          reaction: "I told Elias I'd ride with him."
+        }
+      ];
+    }
+  },
+
+  end_elias_death: {
+    title: "Epilogue — The Mercenary's End",
+    entries: [
+      "They followed anyway. They found Elias first, and then Juno beside him, neither of them made it far enough to even see the wizard's camp.",
+      "Juno's journal ends at the bottom of this page, unfinished, the way so much of her life had been."
+    ],
+    choices: []
+  }
+
+}
+</script>
+
+<header>
+
+<h1>Juno's Journal</h1>
+
+<h2>A Kjlovania Adventure</h2>
+
+<div id="symbols">
+
+<span>▲</span>
+
+<span>∩</span>
+
+<span>✝</span>
+
+</div>
+
+</header>
+
+
+
+<main id="page">
+
+    <h3 id="chapter"></h3>
+
+    <div id="story"></div>
+
+    <div id="choices"></div>
+
+
+</main>
+
+    <footer>
+
+    <button id="restart">
+
+    Begin Again
+
+    </button>
+
+</footer>
+
+</div>
+
+
+<script>
+
+const chapter = document.getElementById("chapter");
+const story = document.getElementById("story");
+const choices = document.getElementById("choices");
+const restart = document.getElementById("restart");
+
+restart.onclick = restartJournal;
+
+loadGame();
+render();
+
+</script>
+
+</body>
+
+</html>
