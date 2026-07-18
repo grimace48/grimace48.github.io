@@ -13,12 +13,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <script>
+  // js functions
 const SAVE_KEY = "junoJournalSave";
 
 let currentScene = "s1";
 let path = {};
 let reaction = null;
 let pendingScene = null;
+let history = [];
 
 function render() {
     const scene = SCENES[currentScene];
@@ -28,6 +30,7 @@ function render() {
         : scene.title;
     renderStory(scene);
     renderChoices(scene);
+    backBtn.style.display = history.length > 0 ? "inline-block" : "none";
     saveGame();
 }
 
@@ -84,6 +87,7 @@ function renderChoices(scene){
 
 function selectChoice(choice){
 
+    history.push({ scene: currentScene, path: { ...path } });  
     Object.assign(path, choice.flag);
 
     // Skip reaction pages
@@ -129,6 +133,25 @@ function nextScene(){
 
 }
 
+function goBack(){
+
+    if(history.length === 0)
+        return;
+
+    const prev = history.pop();
+
+    currentScene = prev.scene;
+
+    path = prev.path;
+
+    reaction = null;
+
+    pendingScene = null;
+
+    render();
+
+}
+
 function restartJournal(){
 
     if(!confirm("Start the journal over?"))
@@ -141,7 +164,7 @@ function restartJournal(){
     reaction=null;
 
     pendingScene=null;
-
+    history = [];
     saveGame();
 
     render();
@@ -162,7 +185,9 @@ function saveGame(){
 
             reaction:reaction,
 
-            pending:pendingScene
+            pending:pendingScene,
+
+            history:history
 
         })
 
@@ -186,6 +211,7 @@ function loadGame(){
     reaction=data.reaction;
 
     pendingScene=data.pending;
+    history=data.history||[];
 
 }
 
@@ -427,35 +453,22 @@ function renderSymbols(){
         /* ---------- Buttons ---------- */
 
         #choices{
-
-        margin-top:60px;
-
+            margin-top:60px;
+            display:flex;
+            flex-direction:column;
+            gap:14px;
         }
 
         #choices button{
-
-        background:#40251b;
-
-        color:white;
-
-        font-family:"Cinzel";
-
-        border:none;
-
-        padding:
-
-        18px
-
-        42px;
-
-        font-size:1rem;
-
-        letter-spacing:2px;
-
-        cursor:pointer;
-
-        transition:.25s;
-
+            background:#40251b;
+            color:white;
+            font-family:"Cinzel";
+            border:none;
+            width:100%;
+            padding:18px 42px;
+            font-size:1rem;
+            letter-spacing:2px;
+            text-align:left;
         }
 
         #choices button:hover{
@@ -478,7 +491,7 @@ function renderSymbols(){
 
         background:none;
 
-        border:none;
+        border:2;
 
         color:#999;
 
@@ -488,9 +501,35 @@ function renderSymbols(){
 
         cursor:pointer;
 
+        margin: 10px;
+
         }
 
         #restart:hover{
+
+        color:white;
+
+        }
+        
+        #back{
+
+        background:none;
+
+        border:2;
+
+        color:#999;
+
+        font-style:italic;
+
+        font-size:1.05rem;
+
+        cursor:pointer;
+
+        margin: 10px;
+
+        }
+
+        #back:hover{
 
         color:white;
 
@@ -821,7 +860,12 @@ const SCENES = {
       "Withermarsh was a town as muddy and unkept as its name implies, forever teetering on the edge of existence, barely more than a trading post in the rural wild of Kjlovania.",
       "We met up with old Rewin and Captain Elias at the Hollow Hearth tavern in Withermarsh. For the next few days we investigated other strange happenings around the area and did a few errands for Elias.",
       "We eventually learned that the wizard Sylvanas was behind several attacks on the trade routes. Enough was enough, and it was time to deal with him.",
-      "We found Elias dead and took out Sylvanas. Sylvanas was following orders from Azmekal, the demon lord in Braxia's sewers. It was time to leave Withermarsh and head to Braxia, the city of vampires they say."
+      "Elias had us pinned down at the Hollow Hearth, pushing us to deal with his dirty work. He introduced that creepy Hooded Stranger and laid out the plan: meet at first light, storm the Eldritch Tower, and take down Sylvanus. My gut screamed that the whole thing was a setup, and looking at the rest of this ragtag group, I wasn't alone. Leif and I agreed—we were being steered like cattle, and I hated every second of it.",
+      "We met in the morning, but Elias didn't show. He left a note instead, “Went on ahead. Meet you there. -Elias”  ",
+      "Leif quipped, “See? I told you we couldn't trust them!” ",
+      "I responded, “We'll know we can trust them if they're dead.”  ",
+      "When we arrived at the tower, Sylvanus was waiting in the yard, acting like he was some master manipulator, but we proved him wrong. It was a messy fight, but we finally found our rhythm. Dion landed the killing blow—shouting my name, as if that would make me swoon—and the wizard fell. ",
+      "Cassian found and pulled Elias’s body from the wreckage; the guy was burned to a crisp, the Hooded Stranger too. As I stood there in the silence, watching Dorian burn the bodies, we scavenged what was left. Among the items were a black iron key and a letter to Lord Adrian in Braxia. It was an endorsement, the golden ticket to get us into the city. Whatever Elias was planning, it died with him, but the road led straight to Braxia. That’s where we were headed next. "
     ],
     choices: [
       {
@@ -1081,13 +1125,14 @@ const SCENES = {
 
 </main>
 
-    <footer>
+<footer>
+  <button id="back">
+  Back a Page
+  </button>
 
-    <button id="restart">
-
-    Begin Again
-
-    </button>
+  <button id="restart">
+  Begin Again
+  </button>
 
 </footer>
 
@@ -1103,6 +1148,8 @@ const restart = document.getElementById("restart");
 const symbols = document.getElementById("symbols");
 
 restart.onclick = restartJournal;
+const backBtn = document.getElementById("back");
+backBtn.onclick = goBack;
 
 loadGame();
 render();
