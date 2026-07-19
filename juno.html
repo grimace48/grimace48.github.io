@@ -630,7 +630,7 @@ const SCENES = {
     entries: [
       "We'd dreamed about leaving for years — the two of us, whispering it into the dark of the stable where it was safe to want things out loud. Zinnia was the one who kept the dream alive when I wanted to let it die. She had a way of collecting hope like other children collected pebbles, and she never seemed to run out. She was the smart one, optimistic, and compassionate. The world was darker in my eyes.",
       "The church called us wards. Called it discipline when they beat us, called themselves our betters. What we were, plainly, were two girls whose parents had vanished somewhere in the years before memory, left in the keeping of people who found God easier to preach than to practice.",
-      "Zinnia delicately looked under the bandage on her arm. The skin was raw and pink yet healing. \"We will get out of here, Zee,\" I said decisively.\n\"When and how?\" she asked.",
+      "Zinnia delicately looked under the bandage on her arm. The skin was raw and pink, yet healing. \"We will get out of here, Zee,\" I said decisively.\n\"When and how?\" she asked.",
     ],
     choices: [
       {
@@ -639,7 +639,7 @@ const SCENES = {
         next: "s2_1",
       },
       {
-        label: "Wait. Plan it. Rations, the horses, a real chance at the road.",
+        label: "Wait. Plan it. Rations, horses, and a real chance at the road.",
         flag: { s2_2: true },
         next: "s3",
       },
@@ -670,7 +670,12 @@ const SCENES = {
         next: "s3_1",
       },
       {
-        label: "Don't make things worse. Stay calm and take the chance to escape. Run. Now.",
+        label: "Give Zinnia the burial she deserves. No one else will.",
+        flag: { s3_2: true },
+        next: "s3_2",
+      },
+      {
+        label: "Don't make things worse. Stay calm and take the chance to escape. Now. Run before it's too late.",
         flag: { s3_3: true },
         next: "s3_3",
       },
@@ -689,10 +694,35 @@ const SCENES = {
     choices: [{ label: "Continue...", flag: {}, next: "s4" }],
   },
 
-  s3_3: {
-    title: "Chapter 3-3: Flee",
+  s3_2: {
+    title: "Chapter 3-2: Burial",
     entries: [
-      "I gathered our packs, mounted the horse, and rode into the dark without looking back.",
+      "I couldn't leave her there. They would discard her body like trash and pretend she never existed.",
+      "I dug through what remained of the night by lantern light, my hands raw, and laid her to rest in the earth at dawn. I chiseled a ‘Z’ in a marker, then the tears came flooding, and I collapsed in exhaustion. ",
+      "I woke up in chains.",
+      "They beat me. Whipped me. Starved me. ",
+      "Time escaped me. I don't know if it was days, weeks, or months before they let me out, but after that, I never tried to escape again. ",
+
+    ],
+    choices: [{ label: "Continue...", flag: {}, next: "s3_2_1" }],
+  },
+  
+  s3_2_1: {
+    title: "Epilogue of the Prisoner 3-2",
+    entries: [
+      "Shortly after Xavier's return in 1749, a great fire broke out in Voxborough. The violence which sparked it stretched beyond the outskirts. Juno's body, the body of a nameless malnourished servant, was found amongst the wreckage of the monastery where she was a prisoner most her life. "
+    ],
+    choices: [{ label: "Continue...", flag: {}, next: "s3_2_1" }],
+  },
+
+  s3_3: {
+    title: "Chapter 3-3: Lonely Road",
+    entries: (path) => [
+      "It pained me, but I took the only chance I had. I ran.",
+      "Quickly, I gathered our packs, mounted the horse, and rode into the dark. ",
+      path.s1_2
+        ? "Tears streamed down my face as I looked back at the quiet hell I escaped."
+        : "I did not look back. I looked at the road ahead and the moonlight guiding my path",
     ],
     choices: [{ label: "Continue...", flag: {}, next: "s4" }],
   },
@@ -720,7 +750,7 @@ const SCENES = {
   s4_1: {
     title: "Chapter 4-1: Voxborough",
     entries: [
-      "I turned toward the noise and the smoke and the promise of a new name.",
+      "I turned toward the noise and the smoke and the promise of a new life.",
     ],
     choices: [{ label: "Continue...", flag: {}, next: "s5" }],
   },
@@ -751,6 +781,11 @@ const SCENES = {
         flag: { s5_2: true },
         next: "s5_2",
       },
+      {
+        label: "Move along. She's not your problem. ",
+        flag: { s5_3: true },
+        next: "s5_3",
+      },
     ],
   },
 
@@ -758,23 +793,39 @@ const SCENES = {
     title: "Chapter 5-1: Color",
     entries: [
       "I did not walk away once the danger passed. I walked her home. She smiled at me, and I felt something again.",
+      "Camila saw color in a city that had none left for me, and so I stayed with her that night. She was captivating, wild, and whimsical. For a while I let myself believe I could hold both lives, the fighting and the softness, in the same two hands. Some nights I would show up at her doorstep bruised up, and she would take me in. I remember our legs entangled and glowing under the morning sun as it peeked over the walls of the city. ",
     ],
     choices: [{ label: "Continue...", flag: {}, next: "s6" }],
   },
 
   s5_2: {
-    title: "Chapter 5-2",
+    title: "Chapter 5-2: The Good Fight",
     entries: [
-      "I got her clear and made sure the debt collectors understood the cost. Attachment was a door I'd keep bolted.",
+      "I got her clear and made sure the debt collectors understood the cost of trying twice",
+      "She thanked me with real warmth in her eyes. I nodded, turned, and didn't look back. Attachment was a door I'd already decided to keep bolted. Now I need to prepare for retaliation in greater numbers. More violence. It was a language I understood, and I was getting damn good at it too. On certain streets, my sight meant safety. On others, people feared me. I made sure my crew never engaged in senseless violence. I wanted to make a difference.",
+    ],
+    choices: [{ label: "Continue...", flag: {}, next: "s6" }],
+  },
+
+  s5_3: {
+    title: "Chapter 5-3: Walk Away",
+    entries: [
+      "I told myself the city was full of girls in trouble and I couldn't save every one, so I wouldn't start with this one.",
+      "I walked past. She was on the wrong street. It was their turf. If I intervened now, there would be retaliation later. It was the smart decision. Self preservation is key. "
     ],
     choices: [{ label: "Continue...", flag: {}, next: "s6" }],
   },
 
   s6: {
     title: "Chapter 6: The Raven or The Light",
-    entries: [
-      "I stood at a crossroads of three paths.",
-      "The Raven Queen stood on the left. In the center, the path was simple and straight. On the right, Lathander, god of the light.",
+    entries: (path) => [
+      "I felt something building inside of me. I could not describe it in words until one night a dream came. It felt vivid, brightness glaring from one side, and I could see through the darkness on the other. My mind felt fully awake.",
+      "I stood at a crossroads of three paths. ",
+      "The Raven Queen made of dak feathers and darker patience stood on the left side of a field gone to ash. From the old monastery books, I remembered her power. She had overthrown the god of death before her. She became a goddess of death and memories.", 
+      "In the center, the path was simple and straight. Just me and the road. ",
+      "On the right, a horse in white and gold armor, so radiant it strained my eyes, he waited with a patience that felt like judgment. Lathander, god of the light. Bringer of dawn.",
+      "In the silence I understood, somehow, that whichever way I followed would bind my soul and my destiny. ",
+      
     ],
     choices: [
       {
@@ -1135,7 +1186,7 @@ const SCENES = {
   s11_1_1: {
     title: "Epilogue 11-1-1",
     entries: [
-      "The rarest gem stays hidden beneath the mountain for eternity.",
+      "The rarest gem stays hidden beneath the mountain.",
       "Juno and Leif live out their lives hidden away from the wars of Kjlovania.",
       "Congratulations, I think… Juno lived out the remainder of her days in the life she chose.",
       "THE END",
