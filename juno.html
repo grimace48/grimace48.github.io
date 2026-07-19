@@ -821,12 +821,19 @@ const SCENES = {
     entries: (path) => [
       "I felt something building inside of me. I could not describe it in words until one night a dream came. It felt vivid, brightness glaring from one side, and I could see through the darkness on the other. My mind felt fully awake.",
       "I stood at a crossroads of three paths. ",
-      "The Raven Queen made of dak feathers and darker patience stood on the left side of a field gone to ash. From the old monastery books, I remembered her power. She had overthrown the god of death before her. She became a goddess of death and memories.", 
+      "The Raven Queen stood on the left side of a field gone to ash, her countenance darker than the black feathers of her wings. From the old monastery books, I remembered her power. She had overthrown the god of death before her. She became a goddess of death and memories.", 
       "In the center, the path was simple and straight. Just me and the road. ",
-      "On the right, a horse in white and gold armor, so radiant it strained my eyes, he waited with a patience that felt like judgment. Lathander, god of the light. Bringer of dawn.",
-      "In the silence I understood, somehow, that whichever way I followed would bind my soul and my destiny. ",
+      (path.s1_1 || !path.s5_1)
+        ? ""
+        : "This path was blocked by a wall of fire.", 
+      "On the right, a knight mounted a horse in white and gold armor, so radiant it strained my eyes, he waited with a patience that felt like judgment. Lathander, god of the light. Bringer of dawn.",
+      (path.s3_3 && !path.s5_3)
+        ? ""
+        : "This path was blocked by a canyon of skeletons and charred remains. ",
       
-    ],
+      "In the silence I understood, somehow, that whichever way I followed would bind my soul and my destiny. ",
+    ].filter(Boolean), // This removes any empty strings "" 
+    
     choices: (path) => [
       {
         label: "Kneel to the Raven Queen. Swear the Oath of Vengeance. Become a paladin. Vow to take down the corrupt patriarchy.",
@@ -836,12 +843,12 @@ const SCENES = {
 
       //if rock or no romance
       ...(path.s1_1 || !path.s5_1
-      ?[{
+      ? [{
         label: "Kneel to no one. Trust yourself.",
         flag: { s6_2: true },
         next: "s6_2",
       }]
-      :[]),
+      : []),
 
       //if peace and protection
       ...(path.s3_3 && !path.s5_3 
@@ -850,23 +857,37 @@ const SCENES = {
         flag: { s6_3: true },
         next: "s6_3",
       }]
-      :[])
+      : [])
     ],
   },
 
   s6_1: {
     title: "Chapter 6-1: Vengeance",
-    entries: ["I knelt in the ash, not the gold. Vengeance, I called it."],
+    entries: ["I knelt in the ash, and swore the Oath of Vengeance.",
+      "Fight the Greater Evil.",
+      "No Mercy for the Wicked.",
+      "By Any Means Necessary.",
+      "Black wings of the raven sprouted from my back, and I soared into the storm clouds above. I became the avenging angle of death. ",
+      "I felt a new power within me when I awoke. I doubled my efforts to fight against the corruption, and took on new quests, big and small, to right Kjlovania. "
+    ],
     choices: [{ label: "Continue...", flag: {}, next: "s7" }],
   },
   s6_2: {
-    title: "Chapter 6-2: Trust Yourself",
-    entries: ["I stood between them and told them both the same thing: I don't need a god."],
+    title: "Chapter 6-2: Untouchable",
+    entries: ["I stood between them and told them both the same thing: I don't need a god.",
+      "As I walked the path before me, I slayed monsters who emerged from the shadows and marched steadily towards the top of a mountain.",
+      "I felt a new strength within me when I awoke. Confidence, and unburdened by the chains of gods and men. I took on the jobs that I wanted, and had no regrets about the ones I turned down. ",
+    ],
     choices: [{ label: "Continue...", flag: {}, next: "s7" }],
   },
   s6_3: {
     title: "Chapter 6-3: Devotion",
-    entries: ["I knelt in the gold instead of the ash. I swore to be a shield instead of only a blade."],
+    entries: ["I knelt in the light instead of the ash. I swore the Oath of Devotion.",
+      "Honesty. Courage. Compassion. Honor. Duty.",
+      "Protect the weak, and punish those who theaten them. ", 
+      "I mounted a white horse and donned a heavy shield glimmering with golden light. I charged forward along side Lathander using my shield to push back the creatures of darkness. ",
+      "I felt a new power within me when I awoke. I doubled my efforts to protect the innocent, and took on new quests, big and small, to right Kjlovania. "
+    ],
     choices: [{ label: "Continue...", flag: {}, next: "s7" }],
   },
 
@@ -874,21 +895,53 @@ const SCENES = {
     title: "Chapter 7: The Call",
     entries: [
       "Work has become predictable. Not easy—never easy—but familiar. There is always another frightened village. Another bully who mistakes fear for strength. Another family desperate enough to beg a stranger for help. ",
-      "A few days ago I tracked down a young woman who had been kidnapped by a fringe cult hoping to swell its ranks. By the time I found her, they had nearly brainwashed her, until I broke them. Her mother couldn't afford a proper reward. She apologized more times than I could count before offering me a warm bed, a few home-cooked meals, and a roof over my head for two nights. It was more than enough. People like her are the reason I keep doing this. Tonight I found myself in a crowded tavern, letting the warmth chase away the cold while I listened to the conversations around me. Most were nothing more than drunken boasts and idle gossip... until one rumor made the room seem quieter than it really was. The Church of the Crimson Sun. Their name drifted across the room from a table of weary travelers. They spoke of Withermarsh—of disappearances, strange chants, and midnight fires. They said the church had begun planting roots there. I knew the Crimson Sun and what followed them all too well. Corruption. Fear. I stared into my cup long after the travelers had moved on. If I ride again tomorrow, I could make it there. Maybe I could make a difference. Maybe this town can still be saved… Or maybe it's already too late. ",
+      "A few days ago I tracked down a young woman who had been kidnapped by a fringe cult hoping to swell its ranks. By the time I found her, they had nearly brainwashed her, until I broke them. Her mother couldn't afford a proper reward. She apologized more times than I could count before offering me a warm bed, a few home-cooked meals, and a roof over my head for two nights. It was more than enough. People like her are the reason I keep doing this.",
+      "Tonight I found myself in a crowded tavern, letting the warmth chase away the cold while I listened to the conversations around me. Most were nothing more than drunken boasts and idle gossip... until one rumor made the room seem quieter than it really was. The Church of the Crimson Sun. Their name drifted across the room from a table of weary travelers. They spoke of Withermarsh—of disappearances, strange chants, and midnight fires. They said the church had begun planting roots there. I knew the Crimson Sun and what followed them all too well. Corruption. Fear. ", 
+      "I stared into my cup long after the travelers had moved on. If I ride again tomorrow, I could make it there. Maybe I could make a difference. Maybe this town can still be saved… Or maybe it's already too late. ",
     ],
-    choices: [
+    choices: (path) => [
       {
-        label: "Follow the rumor to Withermarsh.",
+        label: "Ride for Withermarsh. Leave everything in Voxborough behind. This is the call of my destiny. ",
         flag: { s7_1: true },
-        next: "s7_1",
+        next: "s8",
       },
+      
+      //if romance
+      ...(path.s5_1
+      ? [{
+        label: "I can't just leave Camila. Together we can change Voxborough. ",
+        flag: { s7_2: true },
+        next: "s7_2",
+      }]
+      : []),
+
+      //if no romance and no oath
+      ...(!path.s5_1 && path.s6_2
+      ? [{
+        label: "Withermarsh isn't worth it. My crew is making a difference, and they need me. We'll make sure Voxborough never falls to the Crimson Sun. ",
+        flag: { s7_3: true },
+        next: "s7_3",
+      }]
+      : []),
     ],
   },
 
-  s7_1: {
-    title: "Chapter 7-1: The Ride",
-    entries: ["I told Elias I'd ride with him."],
-    choices: [{ label: "Continue...", flag: {}, next: "s8" }],
+  s7_2: {
+    title: "Epilogue of Spring 7-2 ",
+    entries: ["Juno's journal ends here.",
+      "Juno never answered the call to Withermarsh. Instead, she remained in Voxborough with Camila, and for a precious time the two built the quiet life they had always hoped for. Their days were filled with laughter instead of bloodshed, and love instead of vengeance. But peace is often only borrowed. When Xavier's army marched across Kjlovania, Voxborough stood in its path. The city was overwhelmed, and though Juno fought until her final breath to protect the woman she loved, neither survived the fall of the city.",
+      "THE END"
+    ],
+    choices: [],
+  },
+
+  s7_2: {
+    title: "Epilogue of Autumn 7-3 ",
+    entries: ["Juno's journal ends here.",
+      "Juno never answered the call to Withermarsh. She returned instead to the streets of Voxborough, where her name soon became legend among mercenaries, thieves, and vigilantes alike. Over the years she forged the city's fractured underworld into a force capable of standing against tyranny. When Xavier's army finally arrived, Voxborough did not fall quietly. Its people fought with a courage history should never forget. In the end, however, courage alone could not overcome the darkness that descended upon Kjlovania. Juno fell with hammer in hand, defiant to her last breath.",
+      "THE END"
+    ],
+    choices: [],
   },
 
   s8: {
