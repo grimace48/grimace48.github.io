@@ -827,22 +827,30 @@ const SCENES = {
       "In the silence I understood, somehow, that whichever way I followed would bind my soul and my destiny. ",
       
     ],
-    choices: [
+    choices: (path) => [
       {
-        label: "Kneel to the Raven Queen. Swear the Oath of Vengeance.",
+        label: "Kneel to the Raven Queen. Swear the Oath of Vengeance. Become a paladin. Vow to take down the corrupt patriarchy.",
         flag: { s6_1: true },
         next: "s6_1",
       },
-      {
+
+      //if rock or no romance
+      ...(path.s1_1 || !path.s5_1
+      ?[{
         label: "Kneel to no one. Trust yourself.",
         flag: { s6_2: true },
         next: "s6_2",
-      },
-      {
-        label: "Kneel to Lathander. Swear devotion to the light.",
+      }]
+      :[]),
+
+      //if peace and protection
+      ...(path.s3_3 && !path.s5_3 
+      ? [{
+        label: "Kneel to Lathander. Swear devotion to the light. Become a paladin. Vow to protect the weak and innocent.",
         flag: { s6_3: true },
         next: "s6_3",
-      },
+      }]
+      :[])
     ],
   },
 
@@ -865,7 +873,8 @@ const SCENES = {
   s7: {
     title: "Chapter 7: The Call",
     entries: [
-      "Work found me the way it always did. Rewin introduced me to a man named Elias, who said he was headed toward Withermarsh.",
+      "Work has become predictable. Not easy—never easy—but familiar. There is always another frightened village. Another bully who mistakes fear for strength. Another family desperate enough to beg a stranger for help. ",
+      "A few days ago I tracked down a young woman who had been kidnapped by a fringe cult hoping to swell its ranks. By the time I found her, they had nearly brainwashed her, until I broke them. Her mother couldn't afford a proper reward. She apologized more times than I could count before offering me a warm bed, a few home-cooked meals, and a roof over my head for two nights. It was more than enough. People like her are the reason I keep doing this. Tonight I found myself in a crowded tavern, letting the warmth chase away the cold while I listened to the conversations around me. Most were nothing more than drunken boasts and idle gossip... until one rumor made the room seem quieter than it really was. The Church of the Crimson Sun. Their name drifted across the room from a table of weary travelers. They spoke of Withermarsh—of disappearances, strange chants, and midnight fires. They said the church had begun planting roots there. I knew the Crimson Sun and what followed them all too well. Corruption. Fear. I stared into my cup long after the travelers had moved on. If I ride again tomorrow, I could make it there. Maybe I could make a difference. Maybe this town can still be saved… Or maybe it's already too late. ",
     ],
     choices: [
       {
