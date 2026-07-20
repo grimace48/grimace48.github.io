@@ -306,141 +306,95 @@ function renderSymbols(){
         }
 
         body{
-
         background:
         radial-gradient(circle at top,#2b241d,#0d0907 70%);
-
         font-family:"Cormorant Garamond",serif;
-
         color:#241b12;
-
         display:flex;
-
         justify-content:center;
-
         padding:40px 20px;
-
         min-height:100vh;
-
         }
 
         /* ---------- Journal ---------- */
-
         #journal{
-
         width:100%;
-
         max-width:900px;
-
         }
 
         /* ---------- Header ---------- */
-
         header{
-
         text-align:center;
-
         margin-bottom:30px;
-
         }
-
         header h1{
-
         font-family:"Cinzel",serif;
-
         font-size:3rem;
-
         color:#9f0f33;
-
         letter-spacing:1px;
-
         margin-bottom:10px;
-
         }
-
         header h2{
-
         font-style:italic;
-
         font-weight:500;
-
         font-size:1.8rem;
-
         color:#c7a15a;
-
         margin-bottom:25px;
-
         }
 
-        #symbols{
-
-          display:flex;
-
-          justify-content:center;
-
-          gap:40px;
-
-          font-size:1.4rem;
-
-          color:#74695c;
-
+        #symbols {
+            position: absolute;
+            top: 40px;
+            bottom: 20px;            
+            right: 0;
+            width: 30%;
+            z-index: 0;
+            opacity: 0.15;
+            display: flex;
+            flex-direction: column-reverse; 
+            align-items: center;
+            justify-content: flex-start; 
+            overflow: hidden;        
         }
-        #symbols img{
-          height: 32px;
-          width: auto;
+
+        #symbols img {
+            width: 100%; 
+            height: auto;                   
+            max-height: 100%;                   
+            object-fit: contain;               
+            flex-shrink: 1;
+            min-height: 0;           
         }
 
         /* ---------- Page ---------- */
-
         #page{
-
         background:
         linear-gradient(
         180deg,
         #efe3bf,
         #e8d9b2
         );
-
         padding:80px;
-
         position:relative;
-
-        box-shadow:
-
-        0 30px 80px rgba(0,0,0,.65);
+        box-shadow:        0 30px 80px rgba(0,0,0,.65);
 
         }
 
         /* torn top */
-
         #page::before{
-
         content:"";
-
         position:absolute;
-
         left:0;
-
         top:-22px;
-
         width:100%;
-
         height:26px;
-
         background:
-
         repeating-linear-gradient(
-
         -45deg,
-
         transparent 0px,
-
         transparent 22px,
-
         #efe3bf 22px,
-
         #efe3bf 44px
-
         );
 
         }
@@ -448,50 +402,41 @@ function renderSymbols(){
         /* ---------- Chapter ---------- */
 
         #chapter{
-
         font-family:"Cinzel",serif;
-
         font-size:2.6rem;
-
         color:#9f0f33;
-
         line-height:1.3;
-
         margin-bottom:60px;
-
+        position: relative;
+        z-index: 1;
         }
 
         /* ---------- Story ---------- */
 
         #story{
-
         font-size:2rem;
-
         line-height:1.9;
-
+        position: relative;
+        z-index: 1;
         }
 
         #story p{
-
         margin-bottom:42px;
-
         }
 
         .opening{
-
         font-style:italic;
-
         font-size:2.3rem;
-
         }
 
         /* ---------- Buttons ---------- */
-
         #choices{
             margin-top:60px;
             display:flex;
             flex-direction:column;
             gap:14px;
+            position: relative;
+            z-index: 1;
         }
 
         #choices button{
@@ -507,67 +452,40 @@ function renderSymbols(){
         }
 
         #choices button:hover{
-
         background:#6d1c31;
-
         transform:translateY(-2px);
-
         }
-
         footer{
-
         margin-top:20px;
-
         text-align:center;
-
         }
 
         #restart{
-
         background:none;
-
         border:2;
-
         color:#999;
-
         font-style:italic;
-
         font-size:1.05rem;
-
         cursor:pointer;
-
         margin: 10px;
-
         }
 
         #restart:hover{
-
         color:white;
-
         }
-        
+       
         #back{
-
         background:none;
-
         border:2;
-
         color:#999;
-
         font-style:italic;
-
         font-size:1.05rem;
-
         cursor:pointer;
-
         margin: 10px;
-
         }
 
         #back:hover{
-
         color:white;
-
         }
 
         /* ---------- Mobile ---------- */
@@ -575,39 +493,27 @@ function renderSymbols(){
         @media(max-width:700px){
 
         header h1{
-
         font-size:2.3rem;
-
         }
 
         header h2{
-
         font-size:1.3rem;
-
         }
 
         #page{
-
         padding:40px 28px;
-
         }
 
         #chapter{
-
         font-size:2rem;
-
         }
 
         #story{
-
         font-size:1.6rem;
-
         }
 
         .opening{
-
         font-size:1.9rem;
-
         }
 
         }
@@ -1395,26 +1301,17 @@ const SCENES = {
 </script>
 
 <header>
-
     <h1>Juno's Journal</h1>
-
     <h2>A Kjlovania Adventure</h2>
-
-    <div id="symbols"></div>
-
 </header>
 
 
 
 <main id="page">
-
+    <div id="symbols"></div>
     <h3 id="chapter"></h3>
-
     <div id="story"></div>
-
     <div id="choices"></div>
-
-
 </main>
 
 <footer>
