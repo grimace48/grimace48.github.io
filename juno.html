@@ -227,7 +227,7 @@ function renderSymbols(){
       // 3 zinnia
       // 5 heart, fist, skull
       // 6 raven, sword, or shield
-      // 10 seven pointed star
+      // 9-1 seven pointed star
       // 10-2 sunflower
       // 10-3 Gabriel crescent moon
       // 10-5 dorian gear
@@ -238,49 +238,59 @@ function renderSymbols(){
       // 12 masquerade mask
       // 13-2 wolf
 
-    // ---------- Childhood ----------
     if(path.s1_1)
-        icons.push("images/stone.png");
-
+        icons.push("images/mountain.png");
     if(path.s1_2)
         icons.push("images/fire.png");
 
-    // ---------- Escape ----------
-    if(path.s2_2)
-        icons.push("images/horse.png");
+    if(path.s3_1 || path.s3_2 || path.s3_3)
+        icons.push("images/zinnia.png");
 
-    if(path.s2_1)
-        icons.push("images/moon.png");
+    if(path.s5_1)
+        icons.push("images/heart.png");
+    if(path.s5_2)
+        icons.push("images/fist.png");
+    if(path.s5_3)
+        icons.push("images/skull.png");
 
-    // ---------- Zinnia ----------
-    if(path.s3_1)
-        icons.push("images/blood.png");
-
-    if(path.s3_3)
-        icons.push("images/dove.png");
-
-    // ---------- Oath ----------
     if(path.s6_1)
         icons.push("images/raven.png");
-
     if(path.s6_2)
-        icons.push("images/star.png");
-
+        icons.push("images/sword.png");
     if(path.s6_3)
-        icons.push("images/sun.png");
+        icons.push("images/shield.png");
+
+    if(path.s9_1)
+        icons.push("images/7star.png");
+
+    if(path.s12)
+        icons.push("images/mask.png");
+
+
+    if(path.s10_2)
+        icons.push("images/sunflower.png");
+    if(path.s10_3)
+        icons.push("images/moon.png");
+    if(path.s10_4)
+        icons.push("images/sunrise.png");
+    if(path.s10_5)
+        icons.push("images/gear.png");
+    if(path.s10_6)
+        icons.push("images/note.png");
+    if(path.s10_7)
+        icons.push("images/leaf.png");
+    if(path.s10_8)
+        icons.push("images/blood.png");
+
+    if(path.s13_2)
+        icons.push("images/wolf.png");
 
     // Draw them
-
     icons.forEach(src=>{
-
         const img=document.createElement("img");
-
         img.src=src;
-
         img.alt="";
-
         symbols.appendChild(img);
-
     });
 
 }
@@ -1254,7 +1264,7 @@ const SCENES = {
       if (path.s10_6 || path.s10_8 || path.s10_5) {
         return [{ label: "Continue...", flag: {}, next: "s11_leif_escapes" }];
       }
-      return [{ label: "Continue...", flag: {}, next: "s12" }];
+      return [{ label: "Continue...", flag: {s12:true}, next: "s12" }];
     },
   },
 
@@ -1345,7 +1355,7 @@ const SCENES = {
         return [{ label: "Challenge Hrathgar. Buy them the time they need.", flag: {}, next: "s13_1" }];
       }
       if (path.s6_3 && path.s10_4) {
-        return [{ label: "Stand together.", flag: {}, next: "s13_2" }];
+        return [{ label: "Stand together.", flag: {s13_2:true}, next: "s13_2" }];
       }
       return [{ label: "Continue...", flag: {}, next: "s13_3" }];
     },
