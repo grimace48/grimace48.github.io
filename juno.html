@@ -134,20 +134,13 @@ function nextScene(){
 }
 
 function goBack(){
-
     if(history.length === 0)
         return;
-
     const prev = history.pop();
-
     currentScene = prev.scene;
-
-    path = prev.path;
-
+    path = { ...prev.path }; 
     reaction = null;
-
     pendingScene = null;
-
     render();
 
 }
@@ -243,44 +236,55 @@ function renderSymbols(){
       // 10-7 leaf
       // 10-8 blood drip
       // 12 masquerade mask
-      //13-2 wolf
-
+      // 13-2 wolf
 
     // ---------- Childhood ----------
+    if(path.s1_1)
+        icons.push("images/stone.png");
 
-    if(path.s1 === "stone")
-        icons.push("🪨");
-
-    if(path.s1 === "fire")
-        icons.push("🔥");
+    if(path.s1_2)
+        icons.push("images/fire.png");
 
     // ---------- Escape ----------
-    if(path.escape === "planned")
-        icons.push("🐎");
+    if(path.s2_2)
+        icons.push("images/horse.png");
 
-    if(path.escape === "night")
-        icons.push("🌙");
+    if(path.s2_1)
+        icons.push("images/moon.png");
 
     // ---------- Zinnia ----------
-    if(path.s3 === "burn")
-        icons.push("🩸");
+    if(path.s3_1)
+        icons.push("images/blood.png");
 
-    if(path.s3 === "flee")
-        icons.push("🕊");
+    if(path.s3_3)
+        icons.push("images/dove.png");
+
+    // ---------- Oath ----------
+    if(path.s6_1)
+        icons.push("images/raven.png");
+
+    if(path.s6_2)
+        icons.push("images/star.png");
+
+    if(path.s6_3)
+        icons.push("images/sun.png");
 
     // Draw them
 
-    icons.forEach(icon=>{
+    icons.forEach(src=>{
 
-        const span=document.createElement("span");
+        const img=document.createElement("img");
 
-        span.textContent=icon;
+        img.src=src;
 
-        symbols.appendChild(span);
+        img.alt="";
+
+        symbols.appendChild(img);
 
     });
 
 }
+
 
 </script>
 
@@ -360,16 +364,20 @@ function renderSymbols(){
 
         #symbols{
 
-        display:flex;
+          display:flex;
 
-        justify-content:center;
+          justify-content:center;
 
-        gap:40px;
+          gap:40px;
 
-        font-size:1.4rem;
+          font-size:1.4rem;
 
-        color:#74695c;
+          color:#74695c;
 
+        }
+        #symbols img{
+          height: 32px;
+          width: auto;
         }
 
         /* ---------- Page ---------- */
