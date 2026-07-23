@@ -263,9 +263,6 @@ function renderSymbols(){
     if(path.s9_1)
         icons.push("./images/7star.png");
 
-    if(path.s12)
-        icons.push("./images/mask.png");
-
     if(path.s10_1)
         icons.push("./images/solo.png");
     if(path.s10_2)
@@ -282,6 +279,9 @@ function renderSymbols(){
         icons.push("./images/leaf.png");
     if(path.s10_8)
         icons.push("./images/blood.png");
+
+    if(path.s12)
+        icons.push("./images/mask.png");
 
     if(path.s13_2)
         icons.push("./images/wolf.png");
@@ -1188,31 +1188,34 @@ const SCENES = {
   },
 
   s11_1_1: {
-    title: "Epilogue 11-1-1",
+    title: "Epilogue of the Hidden Gem 11-1-1",
     entries: [
       "The rarest gem stays hidden beneath the mountain.",
-      "Juno and Leif live out their lives hidden away from the wars of Kjlovania.",
-      "Congratulations, I think… Juno lived out the remainder of her days in the life she chose.",
+      "We kept moving, Leif and I. His senses were sharp. Whenever we suspected the fight coming near we would pack up, leave, and change our identities again. But there is always a shadow to hide in, always an underground, and always some fat greedy Lord waiting for you to come along and con him out of his riches, even in Xavier's world. ",
+      "Today we hide in plain sight working for a merchant. We are very comfortable. Tomorrow he will forget we ever existed. We keep to a couple rules: Stick together. We watch each other's backs, and Leif keeps things interesting. Never look back.",
+      "Congratulations, I suppose Juno lived out the remainder of her days in the life she chose.",
       "THE END",
     ],
     choices: [],
   },
 
   s11_1_2: {
-    title: "Epilogue 11-1-2",
+    title: "Epilogue of the River 11-1-2",
     entries: [
       "The river never ceases to flow, carving through the mountain, deeper and deeper until it reaches the sea.",
-      "Juno and Leif try to live out their lives hidden away from the wars of Kjlovania, but Juno eventually gives in to her conscience eating her up on the inside. She goes off to the fight, and dies.",
-      "Congratulations, almost… Juno could not live with her choices. The war within her, just as the war without, ate her up.",
+      "Juno’s Journal ends here. We kept running farther away, Juno and I. I didn't mind the chase. It kept things interesting. I found it more than useful to have someone watching my back. But eventually… she couldn't live this life. She charged back into the war with her hammer swinging. I suppose I should not be surprised. She was always a fighter. She did what she had to. The war within her, just as the war without, ate her up. When I heard she fell, I had to go see for myself. Her body was one among many in a huge field of death. I must go on, but I carry a piece of her with me, always.",
+      "    - Leif",
       "THE END",
     ],
     choices: [],
   },
 
   s11_2: {
-    title: "Epilogue 11-2",
+    title: "Epilogue of the Assassin 11-2",
     entries: [
-      "We fought. It wasn't enough. Every one of us went down before the night was through.",
+      "Juno's journal ends here. ",
+      "This book was recovered from the silver Wolf house previously owned by Captain Elias Vayne shortly after the altercation at Lord Adrian's feast of masks on March 19th 1749. Juno, Dorian Gearhart, Dion Dreadbell, Gabriel, Sir Saberic Wraithbone, Jaksyn, Cassian Vaelmont, and Vera Morningstar died in an assassination attempt against Archbishop Corvinus. The Church of the Crimson Sun took charge of tending to the bodies after a ferocious fight. A justiciar and Lord Adrian's daughter, Allura, were injured.",
+      "    - Elmyra Voss, archivist",
       "THE END",
     ],
     choices: [],
@@ -1239,14 +1242,16 @@ const SCENES = {
       if (path.s6_3 && path.s10_4) {
         return [{ label: "Continue...", flag: {}, next: "s13" }];
       }
-      return [{ label: "Continue...", flag: {}, next: "s12_fail" }];
+      return [{ label: "Continue...", flag: {}, next: "s12_3" }];
     },
   },
 
-  s12_fail: {
-    title: "Epilogue 12",
+  s12_3: {
+    title: "Epilogue of Poison 12-3",
     entries: [
-      "Azmekal did not fall. He wiped us out beneath Braxia's streets, and Xavier was resurrected using Vera's body. The undead now run rampant across Kjlovania.",
+      "Juno's journal ends here. ",
+      "My body aches inside and out. My veins are turning darker every hour. It is the Wither from the poisoned blade of a justiciar, no doubt. I barely escaped the grip of Corvinus’ justiciars, for now, but there is no cure for this disease. Juno, Cassian, and the rest of them fell to Azmekal. They were not ready, and Lord Adrian would not muster a force to aid them. Lord Adrian will not break his neutrality. Next I will succumb to this infection, then so too will Kjlovania.",
+      "    - Vera Morningstar",
       "THE END",
     ],
     choices: [],
@@ -1258,42 +1263,49 @@ const SCENES = {
       "The frozen throne of Brekka waited beneath a dying sky. Somewhere below it, the werewolf demon lord Hrathgar was already waiting for us.",
     ],
     choices: (path) => {
-      if (path.s6_1) {
+      if (path.s6_1 && path.s10_2) {
+        // vengeance and dion
         return [{ label: "Challenge Hrathgar. Buy them the time they need.", flag: {}, next: "s13_1" }];
       }
       if (path.s6_3 && path.s10_4) {
+        // devotion and saberic
         return [{ label: "Stand together.", flag: {s13_2:true}, next: "s13_2" }];
       }
+      // else
       return [{ label: "Continue...", flag: {}, next: "s13_3" }];
     },
   },
 
   s13_1: {
-    title: "Epilogue 13-1",
+    title: "Epilogue of Vengeance 13-1",
     entries: [
-      "I challenged Hrathgar myself, a distraction while the others rallied a band of rebel werewolves to overthrow him. Xavier was resurrected using Vera's captured body anyway. Jaksyn died in that battle.",
-      "But the six who remained went on to stop Xavier for good, defeating every demon lord in his service. Kjlovania was torn apart by war — but in the end, evil was stopped. Congratulations.",
+      "Juno’s journal ends here. "  ,
+      "As a friend and historian, I found a desire to conclude her journal with an epilogue. Juno challenged the demon lord Hrathgar, pulling at his pride, and distracted him while we rallied with the band of rebel werewolves to overcome him. She fought bravely. Dion cried out for her. Hrathgar decapitated her, before we slayed him. ",
+      "The Church of the Crimson Sun captured Ver Morningstar as she was infected with the Wither, and we had no cure at the time. We followed their trail, but we were too late. Xavier was resurrected using her body. Jaksyn the bold died trying to stop the ritual. However, we continued onward. We thank those heroes who were lost along the way for in the end, we did prevail. The seven demon lords were slain by our hands and we stopped Xavier forever. Kjlovania was torn apart by war, but in the end, evil was stopped. ",
+      "    - Dorian Gearhart",
+      "Congratulations! Juno died a hero. Well done. ",
       "THE END",
     ],
     choices: [],
   },
 
   s13_2: {
-    title: "Epilogue 13-2",
+    title: "Epilogue of Devotion 13-2",
     entries: [
       "We stood together and defeated Hrathgar, then went on to prevent Xavier's resurrection on the blood moon entirely. The Crimson Sun began to fall apart.",
-      "The heroes continued to watch over Kjlovania in an era of peace — though none of us ever fully rested. Xavier might rise again one day. Congratulations.",
+      "The heroes continued to watch over Kjlovania in an era of peace — though none of us ever fully rested. Xavier might rise again one day. ",
+      "    - Juno",
+      "Congratulations! Juno lives on as a legend. Well done. ",
       "THE END",
     ],
     choices: [],
   },
 
   s13_3: {
-    // Note: per your outline this branch should not actually be reachable —
-    // kept only as a defensive fallback.
-    title: "Epilogue 13-3",
+    // Note: this branch should not actually be reachable
+    title: "Epilogue of Death 13-3",
     entries: [
-      "The heroes fell. Xavier took over Kjlovania.",
+      "Juno diead. Xavier and his undead army destroyed Kjlovania.",
       "THE END",
     ],
     choices: [],
