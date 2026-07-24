@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Book of Juno — A Kjlovania Adventure Story</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=EB+Garamond:ital,wght@0,400;0,600;1,400&display=swap');
+
+:root{
+    --leather-dark:#1c120c;
+    --leather:#3a2418;
+    --brass:#c9a24a;
+    --brass-bright:#e8c874;
+    --parchment:#ECE0C4;
+    --ink:#241a10;
+}
+
+*{
+    box-sizing:border-box;
+}
+
+html,body{
+    margin:0;
+    padding:0;
+    height:100%;
+    background:var(--leather-dark);
+    font-family:"EB Garamond", serif;
+    overflow-x:hidden;
+}
+
+/* ---------- Background ---------- */
+
+#bg-img{
+    position:fixed;
+    inset:0;
+    background-image:url("./images/leather.jpg");
+    background-size:cover;
+    background-position:center;
+    z-index:0;
+}
+
+#bg-vignette{
+    position:fixed;
+    inset:0;
+    background:radial-gradient(ellipse at center, rgba(0,0,0,.4) 20%, rgba(0,0,0,0.9) 100%);
+    z-index:1;
+    pointer-events:none;
+}
+
+/* ---------- Layout ---------- */
+
+#cover{
+    position:relative;
+    z-index:2;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    padding:5vh 1.5rem 4rem;
+    text-align:center;
+}
+
+/* ---------- Title ---------- */
+
+#title-block{
+    margin-top:1vh;
+    animation:fadeDown 1.1s ease-out both;
+}
+
+h1{
+    font-family:"Cinzel", serif;
+    font-weight:900;
+    font-size:clamp(2.4rem, 7vw, 5rem);
+    letter-spacing:0.05em;
+    margin:0;
+    color:var(--brass-bright);
+    text-shadow:
+        0 1px 0 #6b4e22,
+        0 2px 3px rgba(0,0,0,0.7),
+        0 0 30px rgba(201,162,74,0.25);
+}
+
+#subtitle{
+    font-family:"EB Garamond", serif;
+    font-style:italic;
+    font-size:clamp(1rem, 2.4vw, 1.4rem);
+    color:var(--parchment);
+    opacity:0.85;
+    letter-spacing:0.06em;
+    margin:0.6rem 0 0;
+}
+
+#rule{
+    width:180px;
+    height:2px;
+    margin:1.3rem auto 0;
+    background:linear-gradient(90deg, transparent, var(--brass), transparent);
+    opacity:0.8;
+}
+
+/* ---------- Juno illustration ---------- */
+
+#portrait-wrap{
+    position:relative;
+    margin:3.2vh auto 2vh;
+    max-width:420px;
+    width:78vw;
+    animation:fadeUp 1.3s ease-out both;
+    animation-delay:0.2s;
+}
+
+#portrait-glow{
+    position:absolute;
+    inset:-12%;
+    background:radial-gradient(ellipse at center, rgba(232,200,116,0.35) 0%, rgba(232,200,116,0) 70%);
+    z-index:0;
+    pointer-events:none;
+}
+
+#portrait{
+    position:relative;
+    z-index:1;
+    width:100%;
+    display:block;
+    border-radius:4px;
+    box-shadow:
+        0 0 0 6px var(--leather),
+        0 0 0 8px var(--brass),
+        0 25px 45px rgba(0,0,0,0.6);
+}
+
+/* ---------- CTA ---------- */
+
+#cta{
+    margin-top:3.4vh;
+    animation:fadeUp 1.3s ease-out both;
+    animation-delay:0.4s;
+}
+
+#enter-btn{
+    font-family:"Cinzel", serif;
+    font-weight:700;
+    font-size:1.05rem;
+    letter-spacing:0.12em;
+    color:var(--leather-dark);
+    background:linear-gradient(180deg, var(--brass-bright), var(--brass));
+    border:none;
+    border-radius:3px;
+    padding:1rem 2.6rem;
+    cursor:pointer;
+    text-decoration:none;
+    display:inline-block;
+    box-shadow:
+        0 2px 0 #7a5c26,
+        0 10px 20px rgba(0,0,0,0.5);
+    transition:transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+#enter-btn:hover{
+    transform:translateY(-2px);
+    box-shadow:
+        0 3px 0 #7a5c26,
+        0 14px 26px rgba(0,0,0,0.55);
+}
+
+#enter-btn:active{
+    transform:translateY(1px);
+    box-shadow:0 1px 0 #7a5c26, 0 6px 12px rgba(0,0,0,0.5);
+}
+
+#enter-hint{
+    display:block;
+    margin-top:0.7rem;
+    font-family:"EB Garamond", serif;
+    font-style:italic;
+    font-size:0.85rem;
+    color:var(--parchment);
+    opacity:0.6;
+}
+
+/* ---------- More from Kjlovania ---------- */
+
+#more{
+    margin-top:6vh;
+    padding-top:3vh;
+    border-top:1px solid rgba(201,162,74,0.25);
+    width:100%;
+    max-width:520px;
+}
+
+#more-label{
+    font-family:"Cinzel", serif;
+    font-size:0.72rem;
+    letter-spacing:0.22em;
+    color:var(--brass);
+    opacity:0.85;
+    text-transform:uppercase;
+    margin-bottom:0.4rem;
+}
+
+#more-copy{
+    font-family:"EB Garamond", serif;
+    font-style:italic;
+    font-size:0.95rem;
+    color:var(--parchment);
+    opacity:0.75;
+    max-width:420px;
+    margin:0 auto 1.4rem;
+    line-height:1.5;
+}
+
+#more-links{
+    display:flex;
+    gap:1rem;
+    justify-content:center;
+    flex-wrap:wrap;
+}
+
+.plaque{
+    display:flex;
+    align-items:center;
+    gap:0.55rem;
+    font-family:"EB Garamond", serif;
+    font-size:0.92rem;
+    color:var(--parchment);
+    text-decoration:none;
+    background:rgba(0,0,0,0.25);
+    border:1px solid rgba(201,162,74,0.4);
+    border-radius:3px;
+    padding:0.65rem 1.1rem;
+    transition:background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.plaque:hover{
+    background:rgba(0,0,0,0.4);
+    border-color:var(--brass-bright);
+    transform:translateY(-1px);
+}
+
+.plaque .icon{
+    font-size:1.05rem;
+    line-height:1;
+}
+
+/* ---------- Motion ---------- */
+
+@keyframes fadeDown{
+    from{opacity:0; transform:translateY(-14px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+@keyframes fadeUp{
+    from{opacity:0; transform:translateY(14px);}
+    to{opacity:1; transform:translateY(0);}
+}
+
+@media (prefers-reduced-motion: reduce){
+    #title-block, #portrait-wrap, #cta{
+        animation:none;
+    }
+}
+
+/* ---------- Small screens ---------- */
+
+@media (max-width:420px){
+    #more-links{
+        flex-direction:column;
+        align-items:stretch;
+    }
+}
+</style>
+</head>
+<body>
+
+<div id="bg-img"></div>
+<div id="bg-vignette"></div>
+
+<div id="cover">
+
+    <div id="title-block">
+        <h1>The Book of Juno</h1>
+        <p id="subtitle">A Kjlovania Adventure Story</p>
+        <div id="rule"></div>
+    </div>
+
+    <div id="portrait-wrap">
+        <div id="portrait-glow"></div>
+        <img id="portrait" src="./images/juno.png" alt="Juno, seated by candlelight, writing in her journal" />
+    </div>
+
+    <div id="cta">
+        <a id="enter-btn" href="juno.html">Begin</a>
+        <span id="enter-hint">Destiny shifts with every choice</span>
+    </div>
+
+    <div id="more">
+        <div id="more-label">More from Kjlovania</div>
+        <p id="more-copy">
+            If Juno's story stays with you, the world doesn't end here —
+            Seven Masks of Malice follows more of these characters further into Kjlovania.
+        </p>
+        <div id="more-links">
+            <a class="plaque" href="https://www.youtube.com/watch?v=PuDukamvfI0&list=PLXa0physN-2prXJohK1U_lXoELQ_dpBxL" target="_blank" rel="noopener">
+                <span class="icon">▶</span> Watch on YouTube
+            </a>
+            <a class="plaque" href="https://open.spotify.com/show/3MuPKe4G02luqYs8w0fAQ9?si=d7d3f11b6d8e423b" target="_blank" rel="noopener">
+                <span class="icon">♫</span> Listen on Spotify
+            </a>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>
