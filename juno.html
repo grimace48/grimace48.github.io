@@ -634,7 +634,10 @@ const SCENES = {
   s3_2_1: {
     title: "Epilogue of the Prisoner 3-2",
     entries: [
-      "Shortly after Xavier's return in 1749, a great fire broke out in Voxborough. The violence which sparked it stretched beyond the outskirts. Juno's body, the body of a nameless malnourished servant, was found amongst the wreckage of the monastery where she was a prisoner most her life. "
+      "May 30, 1749",
+      "Juno's journal ends here.",
+      "Shortly after the return of the undead lord Xavier, a great fire broke out in Voxborough. The violence which sparked it stretched beyond the outskirts. Juno's body, the body of a nameless malnourished servant, was found amongst the wreckage of the monastery where she was a prisoner most her life. ",
+      "THE END"
     ],
     choices: [{ label: "Continue...", flag: {}, next: "s3_2_1" }],
   },
@@ -682,10 +685,15 @@ const SCENES = {
   s4_2: {
     title: "Chapter 4-2: Mercenary",
     entries: [
-      "Withermarsh was a town as muddy and unkept as its name implies, forever teetering on the edge of existence.",
-      "One day Captain Elias Vayne strolled in looking to band together mercenaries. He gave me a heavy stone hammer with a worn wooden handle.",
+      "Withermarsh was a town as muddy and unkept as it's name implies, forever teetering on the edge of existence, barely more than a trading post in the rural wild of Kjlovania. ",
+      "I met old Rewin at the Hollow Hearth tavern, where I worked to clean the tables, something all too familiar, but this time for coin and a bed of my own. It wasn't much, but it was freedom. One day Captain Elias Vayne strolled in looking to band together mercenaries to protect the trade routes to Braxia. His face was hardened with age and scarred from many battles, he had short silver hair and a kept beard. He spoke in a deep dry voice. Withermarsh needed a change. I knew I needed this. I put down the mop and Elias gave me a heavy stone hammer with a worn wooden handle. ",
+      "For years I took jobs with Elias and what other work I could find. I traveled the trade routes, but kept my guard up. No one outside Withermarsh ever learned my name. That was until March 1749, when a new group of faces showed up in Withermarsh. There were seven strange men. Outsiders, but not the usual riff raff. ",
+      "They were an impossible collection of misfits, a band of seven strangers thrown together by fate on the muddy trails of Kjlovania and invited here by Elias. There was Dion, the boisterous barbarian whose accordion skills were matched only by his penchant for dramatic declarations; Sir Saberic, a battle-hardened paladin clinging to his faith despite the scars on his soul; and Leif, a wiry, cynical rogue who navigated the shadows as easily as he navigated his own mistrust. Beside them stood Gabriel, a half-elf warlock whose delicate, otherworldly appearance belied his unnerving visions; Jaksyn, the tiefling bard whose flash and fiddle masked a dark and desperate past; and Dorian, the methodical artificer who examined the world through the runic magic etched into his own prosthetic arm. Finally there was Cassian, the haunted dhampir ranger, whose black hood hid the red-tinged eyes and the bloodlust he struggled to suppress.",
+      "As Elias was introducing himself to them, the barbarian, Dion, with his long flowing hair and bare chest puffed out, kept looking over at me with a big smile. Elias stopped mid sentence annoyed at the interruption, and said to Dion, “that's Juno. She's with us.” ",
+      " “And she's not interested,” I added before he could say something dumber than his smile. His huge chest visually deflated at that. ",
+      "Elias sent them off to investigate some rumors in the nearby woods. ",
     ],
-    choices: [{ label: "Continue...", flag: {}, next: "s9_2" }],
+    choices: [{ label: "Continue...", flag: {s4_2:true}, next: "s9_2" }],
   },
 
   s5: {
@@ -851,17 +859,21 @@ const SCENES = {
   },
 
   s7_2: {
-    title: "Epilogue of Spring 7-2 ",
-    entries: ["Juno's journal ends here.",
+    title: "Epilogue of Summer 7-2 ",
+    entries: [
+      "July 9, 1749",
+      "Juno's journal ends here.",
       "Juno never answered the call to Withermarsh. Instead, she remained in Voxborough with Camila, and for a precious time the two built the quiet life they had always hoped for. Their days were filled with laughter instead of bloodshed, and love instead of vengeance. But peace is often only borrowed. When Xavier's army marched across Kjlovania, Voxborough stood in its path. The city was overwhelmed, and though Juno fought until her final breath to protect the woman she loved, neither survived the fall of the city.",
       "THE END"
     ],
     choices: [],
   },
 
-  s7_2: {
+  s7_3: {
     title: "Epilogue of Autumn 7-3 ",
-    entries: ["Juno's journal ends here.",
+    entries: [
+      "October 16, 1749",
+      "Juno's journal ends here.",
       "Juno never answered the call to Withermarsh. She returned instead to the streets of Voxborough, where her name soon became legend among mercenaries, thieves, and vigilantes alike. Over the years she forged the city's fractured underworld into a force capable of standing against tyranny. When Xavier's army finally arrived, Voxborough did not fall quietly. Its people fought with a courage history should never forget. In the end, however, courage alone could not overcome the darkness that descended upon Kjlovania. Juno fell with hammer in hand, defiant to her last breath.",
       "THE END"
     ],
@@ -874,50 +886,60 @@ const SCENES = {
       const hammerName = path.s6_3 ? "Justice" : path.s6_1 ? "Vengeance" : null;
       return [
         "The smell of damp earth and rotting leaves hung thick in the night air as I crouched beneath the trees, watching the crumbling hovel through a cracked window.",
-        "Inside, half a dozen cultists stood in a circle around a man tied to a wooden post. Flames licked at his bare feet while torches painted the walls in flickering orange light.",
-        "I'd seen enough sacrifices to know one when I saw it.",
-        "The Church of the Crimson Sun had grown bolder with every passing month. Under Bishop Glavius, their corruption spread like a plague. Withermarsh was next.",
-        "Not if I could help it.",
-        "Then I heard voices. Boots crunched along the path to my right. I counted seven men shambling toward the hovel.",
-        "I burst through a collapsed section of the wall before anyone else could announce our arrival. Two cultists turned toward me. Too slow.",
+        "Inside, half a dozen cultists stood in a circle around a man tied to a wooden post. Flames licked at his bare feet while torches painted the walls in flickering orange light. They chanted in low, rhythmic voices. I couldn't understand the words, but I didn't need to. I'd seen enough sacrifices to know one when I saw it. ",
+        "The Church of the Crimson Sun had grown bolder with every passing month. Under Bishop Glavius, their corruption spread like a plague, swallowing villages before anyone found the courage to stand against them. Withermarsh was next.",
+        "Not if I could help it. I tightened my grip on my shield and waited for the right moment.",
+        "Then I heard voices. Boots crunched along the path to my right. I glanced over my shoulder and counted seven men shambling toward the hovel. Perfect. Seven oafs stomping through the woods with all the subtlety of a drunken bear. Did they even know each other? I slipped farther left through the brush, hoping to keep my advantage before they blundered into the ritual and ruined everything. ",
+        "No more waiting. I burst through a collapsed section of the wall before anyone else could announce our arrival. Two cultists turned toward me. Too slow.",
         hammerName
           ? `My hammer, ${hammerName}, found my right hand. My wooden shield settled comfortably on my left arm.`
           : "My hammer found my right hand. My wooden shield settled comfortably on my left arm.",
         "The seven strangers poured in from the opposite side of the hovel. Several still wore the crimson robes of the church with weapons hidden beneath them.",
         "One of the newcomers threw off his crimson robe. He was enormous — long brown hair, furs, an accordion across his back, a club nearly as large as I was.",
-        "He dropped to one knee. \"Oh! What beauty has come from dark wilderness! THE HEAVENS! She take my heart!\"",
-        "A towering knight in full plate bearing a shield emblazoned with the Crimson Sun pushed through the melee and placed both hands on the bound victim. Golden light poured from his palms, keeping the man alive.",
-        "The bare-chested lunatic reached the old priest leading the ritual and brought his club crashing down. The chanting stopped. The ritual was over.",
+        "He dropped to one knee. \"Oh! What beauty has come from dark wilderness! THE HEAVENS! She take my heart!\" ",
+        "I stared at him. Behind him, a few of the others burst into laughter. I blew a loose strand of ruby-red hair out of my face. What kind of man declares his love in the middle of a fight? Apparently this one. ",
+        "The battle raged on around us. Knives flew. Most missed. Someone started hurling pebbles. Those missed too. ",
+        "A towering knight, I later learned is Sir Saberic, in full plate armor pushed through the melee and placed both hands on the bound victim. Golden light poured from his palms, keeping the man alive.",
+        "The rest of us cut through the remaining cultists one by one. The bare-chested lunatic finally reached the old priest leading the ritual. With a roar, he brought his club crashing down. The cultist folded to the floor like an accordion of snapping bones. Silence. The chanting stopped. The ritual was over. The giant barbarian grinned and marched straight toward me.",
         "\"I'm Dion Dreadbell,\" he said proudly. \"My heart beats like a thousand war drums for you.\"",
-        "\"I like you less than my hammer does,\" I said. \"And it hates you.\"",
-        "It turned out Captain Elias Vayne and old Rewin had sent all of us here separately to investigate the disappearances. So we were on the same side. That didn't mean I trusted them.",
-        "A tan half-elf with a runic prosthetic arm — Dorian — stepped between us. \"We're on the same side here. Is anyone hurt?\"",
-        "Near the ritual leader's body lay a strange pendant — a dark orb on a silver chain. Gabriel and Dorian picked it up together.",
-        "I cut the ropes binding the victim. He looked past me, toward the sky. \"Xavier...\"",
-        "His entire body turned to stone. The clouds above twisted into a colossal face. Its voice thundered across the night: \"YOU HAVE NO IDEA OF WHAT HORRORS AWAIT!\"",
-        "One thing was certain — we would head back to Withermarsh to find Elias. Oh, and there was this barbarian to deal with...",
+        "I looked down at my hammer, then back at him. \"I like you less than my hammer does,\" I said. \"And it hates you.\"",
+        "A tan half-elf with a runic prosthetic arm, Dorian, stepped between us. \"We're on the same side here. Is anyone hurt?\" He said calmly.",
+        "As everyone caught their breath, introductions became slightly less ridiculous. It turned out Captain Elias Vayne and old Rewin had sent all of us here separately to investigate the disappearances. So we were on the same side. That didn't mean I trusted them. Judging by the sideways glances passing between the others, they didn't entirely trust each other either. They hadn't been together very long. ",
+        "We spread through the ruined hovel searching for clues. Cassian, a pale dhampir ina long dark leadther coat rummaged through the bodies, then paused and gulped down a vial of dark red liquid. Disgusting. Leif, a wiry rogue, and Jaksyn, a tiefling bard, found a weathered sheet of parchment with five names scrawled in charcoal. Missing people. More victims.  ",
+        "Near the body of the ritual leader lay a strange pendant, a dark orb hanging from a silver chain. Gabriel, a skinny half-elf dressed with more jewelry than armor, picked it up delicately. ",
+        "I walked to the victim in the center of the room. Dion followed close behind, watching everything I did. Carefully, I cut the ropes binding him and eased him onto the floor. The poor man trembled violently.",
+        " \"It's over,\" I told him. \"You're safe.\" ",
+        "He looked straight past me toward the sky. \"Xavier...\" Before anyone could ask what he meant, his entire body turned to stone, then crumbled into dust. ",
+        " The dust swirled up towards the sky. Every one of us looked upward. The clouds twisted into a violent spiral overhead. They churned faster... and faster… Until they formed a colossal face stretching across the heavens. Its glowing eyes locked onto us. It's voice thundered across the night. \"YOU HAVE NO IDEA OF WHAT HORRORS AWAIT!\"",
+        "There was much deliberation on what it all meant and what was to come, Gabriel even had a vision of this Xavier, a dark lord tearing at the gates of mortality from behind the veil of death. One thing was certain — we would head back to Withermarsh to find Elias. Oh, and there was this barbarian to deal with...",
       ];
     },
     choices: (path) => {
-      const opts = [
-        {
+      const opts = [];
+      if (path.s4_2) {
+        //mercenary - this path is skipped now
+        opts.push({
+          label: "I rolled my eyes at this barbarian who thought he was a bold romantic. ",
+          flag: {},
+          next: "s9_2",
+        });
+      } else {
+        opts.push({
           label: "Dion caught me off guard. Brush it off, for now at least.",
           flag: { s8_1: true },
           next: "s8_1",
-        },
-      ];
-      if (!path.s5_1) {
-        opts.push({
-          label: "I respect Dion's bold honesty, strength in battle, and that gorgeous hair…",
-          flag: { s8_2: true },
-          next: "s8_2",
         });
-      }
-      if (true) {
         opts.push({
           label: "Oh, hell no. Men are pigs. I have to shut them all down if they're going to take me seriously.",
           flag: { s8_3: true },
           next: "s8_3",
+        });
+      }
+      if (!path.s5_1) {
+        opts.push({
+          label: "I respect Dion's bold honesty, strength in battle, and that long flowing hair is gorgeous…",
+          flag: { s8_2: true },
+          next: "s8_2",
         });
       }
       return opts;
@@ -925,9 +947,9 @@ const SCENES = {
   },
 
   s8_1: {
-    title: "Chapter 8-1",
+    title: "Chapter 8-1: Walls",
     entries: [
-      "I brushed it off — for now, at least. Whatever Dion thought this was, I wasn't going to make it easy for him.",
+      "I ignored any further attempts from Dion on the way back to Withermarsh. I'm not sure I trust any of these guys yet. I will keep my walls up and my eyes open. ",
     ],
     choices: [{ label: "Continue...", flag: {}, next: "s9_1" }],
   },
@@ -935,17 +957,20 @@ const SCENES = {
     title: "Chapter 8-2: Oh, Dion…",
     entries: [
       "I let it happen. I let my guard down a little. On the way back to Withermarsh, I walked next to Dion and he told me of his past.",
-      "Dion said, \"My heart beats like a thousand war drums for you.\"",
+      "He played on his accordion and sang a ballad. There was something charming about his honest innocence, always so bold and over the top, and there was no doubting he was a great asset to have on your side in a fight. Every once in a while he would surprise us all with some profound wisdom ahead of his time. ",
       "At the Hollow Hearth tavern, Cassian asked, \"How do you know when you've become the villain?\"",
       "Dion scratched his beard. \"When you not ask that question.\"",
+      "The whole group fell silent.",
       "Jaksyn: \"...Did Dion just out-philosophy all of us?\"",
+      "The group laughed, except for Dion, and I smiled at him. ",
     ],
     choices: [{ label: "Continue...", flag: {}, next: "s9_1" }],
   },
   s8_3: {
     title: "Chapter 8-3: Nope!",
     entries: [
-      "I'm not interested in you, or any man. Save yourself the trouble — unless you want a hammer to the face, but I'd rather save that for the cultists.",
+      "I'm not interested in you, or any man. Never have been. So save yourself the trouble. All of you, unless you want a hammer to the face, but I'd rather save that for the cultists. ",
+      "We made our way back to Withermarsh without any further drama or ridiculous romantic gestures. ",
     ],
     choices: [{ label: "Continue...", flag: {}, next: "s9_1" }],
   },
@@ -980,7 +1005,9 @@ const SCENES = {
   s9_2_1: {
     title: "Epilogue of the Mercenary 9-2",
     entries: [
-      "Juno’s Journal ends here. As a curious historian, I found a desire to conclude her journal with an epilogue. March 9th, 1749. ",
+      "March 9, 1749",
+      "Juno’s Journal ends here.",
+      "As a curious historian, I found a desire to conclude her journal with an epilogue. ",
       "We followed after Juno and Elias into the dangerous Eldritch Tower to find the pale blue wizard, Sylvanas. After narrowly defeating him, we found the charred bodies of Juno and Elias. We gave them a proper burial in the wood nearby. Their plans remain shrouded in mystery, but perhaps we can learn more in Braxia, or perhaps we walk towards even greater danger…",
       "  - Dorian Gearhart",
       "THE END",
@@ -1172,7 +1199,7 @@ const SCENES = {
         ];
       }
       if (path.s10_6 || path.s10_8 || path.s10_5) {
-        return [{ label: "Continue...", flag: {}, next: "s11_leif_escapes" }];
+        return [{ label: "Continue...", flag: {}, next: "s11_2" }];
       }
       return [{ label: "Continue...", flag: {s12:true}, next: "s12" }];
     },
@@ -1193,11 +1220,12 @@ const SCENES = {
   s11_1_1: {
     title: "Epilogue of the Hidden Gem 11-1-1",
     entries: [
-      "The rarest gem stays hidden beneath the mountain.",
+      "The rarest gem stays hidden beneath the mountain.",  
       "June 27, 1756",
       "We kept moving, Leif and I. His senses were sharp. Whenever we suspected the fight coming near we would pack up, leave, and change our identities again. But there is always a shadow to hide in, always an underground, and always some fat greedy Lord waiting for you to come along and con him out of his riches, even in Xavier's world. ",
       "Today we hide in plain sight working for a merchant. We are very comfortable. Tomorrow he will forget we ever existed. We keep to a couple rules: Stick together. We watch each other's backs, and Leif keeps things interesting. Never look back.",
-      "Congratulations, I suppose Juno lived out the remainder of her days in the life she chose.",
+      "    - Juno",
+      "Congratulations, I suppose... Juno lived out the remainder of her days in the life she chose.",
       "THE END",
     ],
     choices: [],
@@ -1208,8 +1236,9 @@ const SCENES = {
     entries: [
       "The river never ceases to flow, carving through the mountain, deeper and deeper until it reaches the sea.",
       "August 27, 1751",
-      "Juno’s Journal ends here. We kept running farther away, Juno and I. I didn't mind the chase. It kept things interesting. I found it more than useful to have someone watching my back. But eventually… she couldn't live this life. She charged back into the war with her hammer swinging. I suppose I should not be surprised. She was always a fighter. She did what she had to. The war within her, just as the war without, ate her up. When I heard she fell, I had to go see for myself. Her body was one among many in a huge field of death. I must go on, but I carry a piece of her with me, always.",
-      "    - Leif",
+      "Juno’s Journal ends here.",
+      " We kept running farther away, Juno and I. I didn't mind the chase. It kept things interesting. I found it more than useful to have someone watching my back. But eventually… she couldn't live this life. She charged back into the war with her hammer swinging. I suppose I should not be surprised. She was always a fighter. She did what she had to. The war within her, just as the war without, ate her up. When I heard she fell, I had to go see for myself. Her body was one among many in a huge field of death. I must go on, but I carry a piece of her with me, always.",
+      "    - Leif Doomstride",
       "THE END",
     ],
     choices: [],
@@ -1218,18 +1247,10 @@ const SCENES = {
   s11_2: {
     title: "Epilogue of the Assassin 11-2",
     entries: [
+      "March 19, 1749",
       "Juno's journal ends here. ",
-      "This book was recovered from the silver Wolf house previously owned by Captain Elias Vayne shortly after the altercation at Lord Adrian's feast of masks on March 19th 1749. Juno, Dorian Gearhart, Dion Dreadbell, Gabriel, Sir Saberic Wraithbone, Jaksyn, Cassian Vaelmont, and Vera Morningstar died in an assassination attempt against Archbishop Corvinus. The Church of the Crimson Sun took charge of tending to the bodies after a ferocious fight. A justiciar and Lord Adrian's daughter, Allura, were injured.",
+      "This book was recovered from the silver Wolf house previously owned by Captain Elias Vayne shortly after the altercation at Lord Adrian's feast of masks. Juno, Dorian Gearhart, Dion Dreadbell, Gabriel, Sir Saberic Wraithbone, Jaksyn, Cassian Vaelmont, and Vera Morningstar died in an assassination attempt against Archbishop Corvinus. The Church of the Crimson Sun took charge of tending to the bodies after a ferocious fight. A justiciar and Lord Adrian's daughter, Allura, were injured.",
       "    - Elmyra Voss, archivist",
-      "THE END",
-    ],
-    choices: [],
-  },
-
-  s11_leif_escapes: {
-    title: "Epilogue 11",
-    entries: [
-      "The rest of the party was killed or captured in the chaos. Only Leif slipped into the shadows, never to be heard from again.",
       "THE END",
     ],
     choices: [],
@@ -1254,6 +1275,7 @@ const SCENES = {
   s12_3: {
     title: "Epilogue of Poison 12-3",
     entries: [
+      "March 20, 1749",
       "Juno's journal ends here. ",
       "My body aches inside and out. My veins are turning darker every hour. It is the Wither from the poisoned blade of a justiciar, no doubt. I barely escaped the grip of Corvinus’ justiciars, for now, but there is no cure for this disease. Juno, Cassian, and the rest of them fell to Azmekal. They were not ready, and Lord Adrian would not muster a force to aid them. Lord Adrian will not break his neutrality. Next I will succumb to this infection, then so too will Kjlovania.",
       "    - Vera Morningstar",
@@ -1284,7 +1306,7 @@ const SCENES = {
   s13_1: {
     title: "Epilogue of Vengeance 13-1",
     entries: [
-      "March 26th, 1749 "  ,
+      "March 26, 1749 "  ,
       "Juno’s journal ends here. "  ,
       "As a friend and historian, I found a desire to conclude her journal with an epilogue. Juno challenged the demon lord Hrathgar, pulling at his pride, and distracted him while we rallied with the band of rebel werewolves to overcome him. She fought bravely. Dion cried out for her. Hrathgar decapitated her, before we slayed him. ",
       "The Church of the Crimson Sun captured Ver Morningstar as she was infected with the Wither, and we had no cure at the time. We followed their trail, but we were too late. Xavier was resurrected using her body. Jaksyn the bold died trying to stop the ritual. However, we continued onward. We thank those heroes who were lost along the way for in the end, we did prevail. The seven demon lords were slain by our hands and we stopped Xavier forever. Kjlovania was torn apart by war, but in the end, evil was stopped. ",
@@ -1298,7 +1320,7 @@ const SCENES = {
   s13_2: {
     title: "Epilogue of Devotion 13-2",
     entries: [
-      "April 8th, 1760", 
+      "April 8, 1760", 
       "We stood together and defeated Hrathgar, then went on to prevent Xavier's resurrection on the blood moon entirely. The Crimson Sun began to fall apart.",
       "The heroes continued to watch over Kjlovania in an era of peace — though none of us ever fully rested. Xavier might rise again one day. ",
       "    - Juno",
@@ -1312,7 +1334,7 @@ const SCENES = {
     // Note: this branch should not actually be reachable
     title: "Epilogue of Death 13-3",
     entries: [
-      "Juno diead. Xavier and his undead army destroyed Kjlovania.",
+      "Juno died. Xavier and his undead army destroyed Kjlovania.",
       "THE END",
     ],
     choices: [],
