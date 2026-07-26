@@ -146,46 +146,28 @@ function goBack(){
 }
 
 function restartJournal(){
-
-    if(!confirm("Start the journal over?"))
-        return;
-
+    localStorage.removeItem("junoJournalSave");
     currentScene="s1";
-
     path={};
-
     reaction=null;
-
     pendingScene=null;
     history = [];
     saveGame();
-
     render();
-
 }
 
 function saveGame(){
 
     localStorage.setItem(
-
         SAVE_KEY,
-
         JSON.stringify({
-
             scene:currentScene,
-
             path:path,
-
             reaction:reaction,
-
             pending:pendingScene,
-
             history:history
-
         })
-
     );
-
 }
 
 function loadGame(){
@@ -1302,7 +1284,8 @@ const SCENES = {
   s13_1: {
     title: "Epilogue of Vengeance 13-1",
     entries: [
-      "Juno’s journal ends here. March 26th, 1749.  "  ,
+      "March 26th, 1749 "  ,
+      "Juno’s journal ends here. "  ,
       "As a friend and historian, I found a desire to conclude her journal with an epilogue. Juno challenged the demon lord Hrathgar, pulling at his pride, and distracted him while we rallied with the band of rebel werewolves to overcome him. She fought bravely. Dion cried out for her. Hrathgar decapitated her, before we slayed him. ",
       "The Church of the Crimson Sun captured Ver Morningstar as she was infected with the Wither, and we had no cure at the time. We followed their trail, but we were too late. Xavier was resurrected using her body. Jaksyn the bold died trying to stop the ritual. However, we continued onward. We thank those heroes who were lost along the way for in the end, we did prevail. The seven demon lords were slain by our hands and we stopped Xavier forever. Kjlovania was torn apart by war, but in the end, evil was stopped. ",
       "    - Dorian Gearhart",
@@ -1372,10 +1355,16 @@ const story = document.getElementById("story");
 const choices = document.getElementById("choices");
 const restart = document.getElementById("restart");
 const symbols = document.getElementById("symbols");
+const backBtn = document.getElementById("back");
+const params = new URLSearchParams(window.location.search);
 
 restart.onclick = restartJournal;
-const backBtn = document.getElementById("back");
 backBtn.onclick = goBack;
+
+if(params.get("reset") === "true"){
+  window.history.replaceState({}, document.title, window.location.pathname);
+  restartJournal();
+}
 
 loadGame();
 render();
