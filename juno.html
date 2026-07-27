@@ -23,6 +23,11 @@ let pendingScene = null;
 let history = [];
 
 function render() {
+    if("speechSynthesis" in window){
+          window.speechSynthesis.cancel();
+          if(typeof playBtn !== "undefined")
+              playBtn.textContent = "▶ Play Aloud";
+      }
     const scene = SCENES[currentScene];
     renderSymbols();
     chapter.textContent = reaction
@@ -50,85 +55,49 @@ function renderStory(scene){
 
 
 function renderChoices(scene){
-
     choices.innerHTML="";
-
     if(reaction){
-
         const button=document.createElement("button");
-
         button.textContent="Turn the Page";
-
         button.onclick=nextScene;
-
         choices.appendChild(button);
-
         return;
-
     }
-
     const list=resolve(scene.choices);
-
     list.forEach(choice=>{
-
         const button=document.createElement("button");
-
         button.className="choice";
-
         button.textContent=choice.label;
-
         button.onclick=()=>selectChoice(choice);
-
         choices.appendChild(button);
-
     });
-
 }
 
 function selectChoice(choice){
-
     history.push({ scene: currentScene, path: { ...path } });  
     Object.assign(path, choice.flag);
-
     // Skip reaction pages
     if(true){
-
         currentScene = resolve(choice.next);
-
         reaction = null;
-
         pendingScene = null;
-
         render();
-
         return;
-
     }
-
     reaction = {
-
         title: choice.reactionTitle,
-
         text: Array.isArray(resolve(choice.reaction))
             ? resolve(choice.reaction)
             : [resolve(choice.reaction)]
-
     };
-
     pendingScene = resolve(choice.next);
-
     render();
-
 }
 
 function nextScene(){
-
     currentScene=pendingScene;
-
     reaction=null;
-
     pendingScene=null;
-
     render();
 
 }
@@ -157,7 +126,6 @@ function restartJournal(){
 }
 
 function saveGame(){
-
     localStorage.setItem(
         SAVE_KEY,
         JSON.stringify({
@@ -171,40 +139,29 @@ function saveGame(){
 }
 
 function loadGame(){
-
     const save=localStorage.getItem(SAVE_KEY);
-
     if(!save)
         return;
 
     const data=JSON.parse(save);
-
     currentScene=data.scene;
-
     path=data.path;
-
     reaction=data.reaction;
-
     pendingScene=data.pending;
     history=data.history||[];
 
 }
 
 function resolve(value){
-
     if(typeof value==="function")
         return value(path);
-
     return value;
 
 }
 
 function renderSymbols(){
-
     symbols.innerHTML = "";
-
     const icons = [];
-
       // 1 mountain or fire
       // 3 zinnia
       // 5 heart, fist, skull
@@ -275,9 +232,34 @@ function renderSymbols(){
         img.alt="";
         symbols.appendChild(img);
     });
+}
+
+function speakStory(){
+    if(!("speechSynthesis" in window)){
+        alert("Sorry, your browser doesn't support read-aloud.");
+        return;
+    }
+    window.speechSynthesis.cancel();
+    const paragraphs = Array.from(story.querySelectorAll("p")).map(p => p.textContent);
+    const text = paragraphs.join(". ");
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.95;
+    utterance.onend = () => { playBtn.textContent = "▶ Play Aloud"; };
+    utterance.onerror = () => { playBtn.textContent = "▶ Play Aloud"; };
+    window.speechSynthesis.speak(utterance);
+    playBtn.textContent = "⏸ Stop Reading";
 
 }
 
+function togglePlayAloud(){
+    if(window.speechSynthesis.speaking){
+        window.speechSynthesis.cancel();
+        playBtn.textContent = "▶ Play Aloud";
+        return;
+    }
+    speakStory();
+
+}
 
 </script>
 
@@ -434,62 +416,54 @@ function renderSymbols(){
         text-align:center;
         }
 
-        #restart{
-        background:none;
-        border:2;
-        color:#999;
-        font-style:italic;
-        font-size:1.05rem;
-        cursor:pointer;
-        margin: 10px;
+        #restart,
+        #back,
+        #play-aloud {
+          box-sizing: border-box; 
+          height: 38px;          
+          display: inline-flex;  
+          align-items: center;
+          justify-content: center;
+
+          background: #40251b;
+          border: 1px solid; 
+          color: #999;
+          font-style: italic;
+          font-size: 1.05rem;
+          line-height: 1;
+          cursor: pointer;
+          margin: 10px;
+          padding: 0 10px;       
         }
 
-        #restart:hover{
-        color:white;
-        }
-       
-        #back{
-        background:none;
-        border:2;
-        color:#999;
-        font-style:italic;
-        font-size:1.05rem;
-        cursor:pointer;
-        margin: 10px;
+        #restart:hover,
+        #back:hover,
+        #play-aloud:hover {
+          background: #6d1c31;
+          color: white;
         }
 
-        #back:hover{
-        color:white;
-        }
 
         /* ---------- Mobile ---------- */
-
         @media(max-width:700px){
-
         header h1{
         font-size:2.3rem;
         }
-
         header h2{
         font-size:1.3rem;
         }
-
         #page{
         padding:40px 28px;
         }
-
         #chapter{
         font-size:2rem;
         }
-
         #story{
         font-size:1.6rem;
         }
-
         .opening{
         font-size:1.9rem;
         }
-
         }
 
 </style>
@@ -1368,13 +1342,11 @@ const SCENES = {
 </main>
 
 <footer>
-  <button id="back">
-  Back a Page
-  </button>
+  <button id="play-aloud"> ▶ Play Aloud </button>
 
-  <button id="restart">
-  Begin Again
-  </button>
+  <button id="back"> ⏴Back a Page </button>
+
+  <button id="restart"> ↺  Restart </button>
 
 </footer>
 
@@ -1390,7 +1362,9 @@ const restart = document.getElementById("restart");
 const symbols = document.getElementById("symbols");
 const backBtn = document.getElementById("back");
 const params = new URLSearchParams(window.location.search);
+const playBtn = document.getElementById("play-aloud");
 
+playBtn.onclick = togglePlayAloud;
 restart.onclick = restartJournal;
 backBtn.onclick = goBack;
 
