@@ -30,6 +30,7 @@ function render() {
       }
     const scene = SCENES[currentScene];
     renderSymbols();
+    updateMood();
     chapter.textContent = reaction
         ? reaction.title || "The Ink Settles"
         : scene.title;
@@ -76,6 +77,8 @@ function renderChoices(scene){
 function selectChoice(choice){
     history.push({ scene: currentScene, path: { ...path } });  
     Object.assign(path, choice.flag);
+    path.mood = (path.mood || 0) + (choice.mood || 0);
+
     // Skip reaction pages
     if(true){
         currentScene = resolve(choice.next);
@@ -92,6 +95,20 @@ function selectChoice(choice){
     };
     pendingScene = resolve(choice.next);
     render();
+}
+
+function updateMood(){
+    const raw = path.mood || 0;
+    const clamped = Math.max(-10, Math.min(10, raw));
+    if(clamped >= 0){
+        const alpha = 2*(clamped / 10) * 0.65;
+        mood.style.background =
+            `radial-gradient(ellipse at center, rgba(0,0,0,0) 35%, rgba(0,0,0,${alpha}) 100%)`;
+    } else {
+        const alpha = (Math.abs(clamped) / 10) * 0.35;
+        mood.style.background =
+            `radial-gradient(ellipse at center, rgba(255,214,140,${alpha}) 0%, rgba(255,214,140,0) 70%)`;
+    }
 }
 
 function nextScene(){
@@ -281,7 +298,15 @@ function togglePlayAloud(){
         min-height:100vh;
         }
 
-        /* ---------- Journal ---------- */
+        #mood{
+            position:fixed;
+            inset:0;
+            pointer-events:none;
+            z-index:50;
+            transition: background 0.9s ease;
+        }
+
+
         #journal{
         width:100%;
         max-width:900px;
@@ -472,6 +497,7 @@ function togglePlayAloud(){
 
 <body>
 
+<div id="mood"></div>
 <div id="journal">
 
 <script> // story
@@ -488,11 +514,13 @@ const SCENES = {
       {
         label: "Remain a rock. Strong, calm, and unyielding. Give him nothing.",
         flag: { s1_1: true },
+        mood: -1,
         next: "s1_1",
       },
       {
         label: "Fight fire with fire. Scream. Make your pain echo in the back of his mind for nights to come. Give him doubts.",
         flag: { s1_2: true },
+        mood: 1,
         next: "s1_2",
       },
     ],
@@ -525,6 +553,7 @@ const SCENES = {
       {
         label: "Run tonight. We have nothing but each other — that has to be enough. No more beatings. No drunken clergy.",
         flag: { s2_1: true },
+        mood: 1,
         next: "s2_1",
       },
       {
@@ -562,25 +591,33 @@ const SCENES = {
       "Rain began to fall outside, and the world moved on. A cart rolled down the muddy street. Someone was chopping firewood. The world had the audacity to keep turning.",
       "I wanted to lash out, but there was no one to scream at. Now I had no one and no place to go. ",
     ],
-    choices: [{ label: "Continue...", flag: {}, next: "s4_2" }],
+    choices: [{ label: "Continue...", flag: {}, mood: 1, next: "s4_2" }],
   },
 
   s3: {
     title: "Chapter 3: A Flower Falls",
     entries: [
       "For weeks, Zinnia and I stole our freedom one handful at a time.",
-      "Every day we carried a little more to the stable until we had enough to survive. Every day we also battered the front door's lock against the frame as we came and went...",
-      "One filthy arm wrapped around her waist while the other crushed her wrist. Even through the dim candlelight I could see the panic on her face. \"Please...\" I muttered. There was no breath. No heartbeat. Only silence.",
+      "A loaf of bread tucked beneath a cloak. A waterskin hidden beneath fresh hay. A blanket, a flint, a knife that had long since lost its edge. Every day we carried a little more to the stable until we had enough to survive. Every day we also battered the front door's lock against the frame as we came and went, pretending clumsiness until the mechanism finally refused to catch. They would repair it eventually, but not quickly. The clergy never hurried unless it meant forcing children to work.",
+      "Two nights later, the wine flowed as it always did. Their laughter echoed through the house until it dissolved into drunken slurs and finally silence. This was our chance. I eased my bedroom door open and found Zinnia already waiting. We exchanged one nervous glance before slipping into the hallway. Every board beneath my feet felt loud enough to wake the dead, yet somehow the priests continued snoring. I reached the staircase and started down, one careful step at a time. Something made me look back.",
+      "Zinnia wasn't behind me. She stood frozen at the top of the stairs. Elder Jensen had appeared from the darkness. One filthy arm wrapped around her waist while the other crushed her wrist. Even through the dim candlelight I could see the panic on her face. His bloodshot eyes gleamed with drunken delight, as if terror itself amused him.",      "",
+      "\"No!\" I whispered, barely able to breathe. She struggled. He laughed. His grip tightened until she gasped in pain. He dragged her toward the railing while she clawed desperately at his sleeve. I ran. Before I could reach them... ...he shoved her.",
+      "Time stopped. ",
+      "Zinnia caught the wooden railing with both hands. For one impossible heartbeat I thought she'd hold. The old wood cracked. The spindle splintered apart. She fell. Head first.",
+      "The sound her body made against the stone floor was worse than any scream. A sickening crack. Then... Nothing. I threw myself beside her.",
+      "\"Zinnia!\" I grabbed her shoulders, my hands shaking so violently I could barely hold her. Her eyes stared past me, empty. Her neck bent at an angle no living person could survive. \"Please...\" I muttered. There was no breath. No heartbeat. Only silence. The world seemed to disappear around me. I couldn't hear the snoring priests. I couldn't hear my own sobs. I could only see my little sister lying broken in my arms, the only person who had ever truly been mine. The promise we'd whispered to each other every night... We'll leave together. I had failed her.", 
     ],
     choices: [
       {
         label: "Kill them all. Burn it down. Leave nothing behind.",
         flag: { s3_1: true },
+        mood: 3,
         next: "s3_1",
       },
       {
         label: "Give Zinnia the burial she deserves. No one else will.",
         flag: { s3_2: true },
+        mood: -1,
         next: "s3_2",
       },
       {
@@ -594,13 +631,21 @@ const SCENES = {
   s3_1: {
     title: "Chapter 3-1: Blood and Fire",
     entries: (path) => [
-      "Something inside me died beside her. The grief vanished so completely it frightened me. In its place came something cold.",
-      "I slowly laid Zinnia's body on the floor and kissed her forehead.",
+      "Something inside me died beside her. The grief vanished so completely it frightened me. In its place came something cold. I slowly laid Zinnia's body on the floor and kissed her forehead one last time.",
+      "\"I love you, Zee,\" I whispered.",
+      "Then I stood. The shattered railing lay scattered across the landing above me. One thick, jagged spindle rested among the splinters, stained with fresh blood where it had snapped free. I picked it up. It fit perfectly in my hand. Elder Jensen was still standing there. Still smiling. He opened his mouth, no doubt to spit another insult. I never heard the words. The spindle crashed into his skull with a crack that echoed through the hall. He stumbled backward.",
+      "I hit him again. And again. And again.",
+      "His smirk disappeared beneath blood. Even after he collapsed, I kept swinging until I was certain he would never touch another child again.",
+      "My breathing slowed. One more. There was still one monster left. The High Priest. I walked to his chamber at the end of the hallway and kicked the door open so hard it slammed against the wall. He blinked awake in confusion.",
+      "Before he could speak, I drove the wooden club between his legs. His scream filled the room. Good. I wanted him awake. I wanted him to see me. To know exactly who had come for him.",
+      "\"See me,\" I ordered, my voice strangely calm. The response never came. The first blow broke his jaw. The second shattered his temple. By the time I stopped, blood covered the walls, the bed, and my arms to the elbows. Justice had finally found him. ",
+      "The house behind me erupted into frightened voices as the others began waking. I walked through them without running, without hiding. Their horrified faces barely registered. At the front hall, I pulled a burning sconce from the wall and tossed it onto the dry wooden floor. Flames crawled greedily across the rugs.",
+      "Then I stepped into the cold night. The stable waited exactly where we'd planned. Our supplies. My pack. Zinnia's pack. I hesitated only a second and fastened them both to the saddle. In the darkness, I mounted the horse and dug in my heels. ",
       path.s1_2
         ? "Tears streamed down my face as I looked back at the flames."
         : "I never looked back.",
     ],
-    choices: [{ label: "Continue...", flag: {}, next: "s4" }],
+    choices: [{ label: "Continue...", flag: {}, mood: 1, next: "s4" }],
   },
 
   s3_2: {
@@ -613,7 +658,7 @@ const SCENES = {
       "Time escaped me. I don't know if it was days, weeks, or months before they let me out, but after that, I never tried to escape again. ",
 
     ],
-    choices: [{ label: "Continue...", flag: {}, next: "s3_2_1" }],
+    choices: [{ label: "Continue...", flag: {}, mood: 1, next: "s3_2_1" }],
   },
   
   s3_2_1: {
@@ -624,7 +669,7 @@ const SCENES = {
       "Shortly after the return of the undead lord Xavier, a great fire broke out in Voxborough. The violence which sparked it stretched beyond the outskirts. Juno's body, the body of a nameless malnourished servant, was found amongst the wreckage of the monastery where she was a prisoner most her life. ",
       "THE END"
     ],
-    choices: [{ label: "Continue...", flag: {}, next: "s3_2_1" }],
+    choices: [],
   },
 
   s3_3: {
@@ -642,8 +687,8 @@ const SCENES = {
   s4: {
     title: "Chapter 4: A Fork in the Road",
     entries: [
-      "The road splits east of the old boundary stones, and I stood there longer than I'll admit.",
-      "West led to Voxborough — a city stacked on itself, gang-ruled and hungry. The other led east, toward Withermarsh.",
+      "The road split north of the old boundary stones, and I stood there longer than I'll admit, like the ground itself owed me an answer.",
+      "West led to Voxborough, a city stacked on itself, gang-ruled and hungry, big enough that a girl with nothing could fade into it and come out someone else entirely. The other led east, toward Withermarsh. It was the way of quiet and shadow, hidden in the unknown. The kind where no one asks your name because no one plans on remembering it.",
     ],
     choices: [
       {
@@ -654,6 +699,7 @@ const SCENES = {
       {
         label: "East, toward Withermarsh, in shadow.",
         flag: { s4_2: true },
+        mood: 1,
         next: "s4_2",
       },
     ],
@@ -678,7 +724,7 @@ const SCENES = {
       " “And she's not interested,” I added before he could say something dumber than his smile. His huge chest visually deflated at that. ",
       "Elias sent them off to investigate some rumors in the nearby woods. ",
     ],
-    choices: [{ label: "Continue...", flag: {s4_2:true}, next: "s9_2" }],
+    choices: [{ label: "Continue...", flag: {s4_2:true}, mood: 1, next: "s9_2" }],
   },
 
   s5: {
@@ -691,16 +737,19 @@ const SCENES = {
       {
         label: "Save the girl, and make sure she gets home safe. She's cute...",
         flag: { s5_1: true },
+        mood: -1,
         next: "s5_1",
       },
       {
         label: "Do what's right. Fight off the thugs, but don't get attached.",
         flag: { s5_2: true },
+        mood: -1,
         next: "s5_2",
       },
       {
         label: "Move along. She's not your problem. ",
         flag: { s5_3: true },
+        mood: 2,
         next: "s5_3",
       },
     ],
@@ -712,7 +761,7 @@ const SCENES = {
       "I did not walk away once the danger passed. I walked her home. She smiled at me, and I felt something again.",
       "Camila saw color in a city that had none left for me, and so I stayed with her that night. She was captivating, wild, and whimsical. For a while I let myself believe I could hold both lives, the fighting and the softness, in the same two hands. Some nights I would show up at her doorstep bruised up, and she would take me in. I remember our legs entangled and glowing under the morning sun as it peeked over the walls of the city. ",
     ],
-    choices: [{ label: "Continue...", flag: {}, next: "s6" }],
+    choices: [{ label: "Continue...", flag: {}, mood: -1, next: "s6" }],
   },
 
   s5_2: {
@@ -721,7 +770,7 @@ const SCENES = {
       "I got her clear and made sure the debt collectors understood the cost of trying twice",
       "She thanked me with real warmth in her eyes. I nodded, turned, and didn't look back. Attachment was a door I'd already decided to keep bolted. Now I need to prepare for retaliation in greater numbers. More violence. It was a language I understood, and I was getting damn good at it too. On certain streets, my sight meant safety. On others, people feared me. I made sure my crew never engaged in senseless violence. I wanted to make a difference.",
     ],
-    choices: [{ label: "Continue...", flag: {}, next: "s6" }],
+    choices: [{ label: "Continue...", flag: {}, mood: -1, next: "s6" }],
   },
 
   s5_3: {
@@ -730,7 +779,7 @@ const SCENES = {
       "I told myself the city was full of girls in trouble and I couldn't save every one, so I wouldn't start with this one.",
       "I walked past. She was on the wrong street. It was their turf. If I intervened now, there would be retaliation later. It was the smart decision. Self preservation is key. "
     ],
-    choices: [{ label: "Continue...", flag: {}, next: "s6" }],
+    choices: [{ label: "Continue...", flag: {}, mood: 1, next: "s6" }],
   },
 
   s6: {
@@ -755,6 +804,7 @@ const SCENES = {
       {
         label: "Kneel to the Raven Queen. Swear the Oath of Vengeance. Become a paladin. Vow to take down the corrupt patriarchy.",
         flag: { s6_1: true },
+        mood: 2,
         next: "s6_1",
       },
 
@@ -772,6 +822,7 @@ const SCENES = {
       ? [{
         label: "Kneel to Lathander. Swear devotion to the light. Become a paladin. Vow to protect the weak and innocent.",
         flag: { s6_3: true },
+        mood: -2,
         next: "s6_3",
       }]
       : [])
@@ -787,7 +838,7 @@ const SCENES = {
       "Black wings of the raven sprouted from my back, and I soared into the storm clouds above. I became the avenging angle of death. ",
       "I felt a new power within me when I awoke. I doubled my efforts to fight against the corruption, and took on new quests, big and small, to right Kjlovania. "
     ],
-    choices: [{ label: "Continue...", flag: {}, next: "s7" }],
+    choices: [{ label: "Continue...", flag: {}, mood: 1, next: "s7" }],
   },
   s6_2: {
     title: "Chapter 6-2: Untouchable",
@@ -805,12 +856,13 @@ const SCENES = {
       "I mounted a white horse and donned a heavy shield glimmering with golden light. I charged forward along side Lathander using my shield to push back the creatures of darkness. ",
       "I felt a new power within me when I awoke. I doubled my efforts to protect the innocent, and took on new quests, big and small, to right Kjlovania. "
     ],
-    choices: [{ label: "Continue...", flag: {}, next: "s7" }],
+    choices: [{ label: "Continue...", flag: {}, mood: -1, next: "s7" }],
   },
 
   s7: {
     title: "Chapter 7: The Call",
     entries: [
+      "March 2, 1749"  ,
       "Work has become predictable. Not easy—never easy—but familiar. There is always another frightened village. Another bully who mistakes fear for strength. Another family desperate enough to beg a stranger for help. ",
       "A few days ago I tracked down a young woman who had been kidnapped by a fringe cult hoping to swell its ranks. By the time I found her, they had nearly brainwashed her, until I broke them. Her mother couldn't afford a proper reward. She apologized more times than I could count before offering me a warm bed, a few home-cooked meals, and a roof over my head for two nights. It was more than enough. People like her are the reason I keep doing this.",
       "Tonight I found myself in a crowded tavern, letting the warmth chase away the cold while I listened to the conversations around me. Most were nothing more than drunken boasts and idle gossip... until one rumor made the room seem quieter than it really was. The Church of the Crimson Sun. Their name drifted across the room from a table of weary travelers. They spoke of Withermarsh—of disappearances, strange chants, and midnight fires. They said the church had begun planting roots there. I knew the Crimson Sun and what followed them all too well. Corruption. Fear. ", 
@@ -828,6 +880,7 @@ const SCENES = {
       ? [{
         label: "I can't just leave Camila. Together we can change Voxborough. ",
         flag: { s7_2: true },
+        mood: -1,
         next: "s7_2",
       }]
       : []),
@@ -906,6 +959,7 @@ const SCENES = {
         opts.push({
           label: "I rolled my eyes at this barbarian who thought he was a bold romantic. ",
           flag: {},
+          mood: 1,
           next: "s9_2",
         });
       } else {
@@ -917,6 +971,7 @@ const SCENES = {
         opts.push({
           label: "Oh, hell no. Men are pigs. I have to shut them all down if they're going to take me seriously.",
           flag: { s8_3: true },
+          mood: 1,
           next: "s8_3",
         });
       }
@@ -924,6 +979,7 @@ const SCENES = {
         opts.push({
           label: "I respect Dion's bold honesty, strength in battle, and that long flowing hair is gorgeous…",
           flag: { s8_2: true },
+          mood: -1,
           next: "s8_2",
         });
       }
@@ -949,7 +1005,7 @@ const SCENES = {
       "Jaksyn: \"...Did Dion just out-philosophy all of us?\"",
       "The group laughed, except for Dion, and I smiled at him. ",
     ],
-    choices: [{ label: "Continue...", flag: {}, next: "s9_1" }],
+    choices: [{ label: "Continue...", flag: {}, mood: -1, next: "s9_1" }],
   },
   s8_3: {
     title: "Chapter 8-3: Nope!",
@@ -957,7 +1013,7 @@ const SCENES = {
       "I'm not interested in you, or any man. Never have been. So save yourself the trouble. All of you, unless you want a hammer to the face, but I'd rather save that for the cultists. ",
       "We made our way back to Withermarsh without any further drama or ridiculous romantic gestures. ",
     ],
-    choices: [{ label: "Continue...", flag: {}, next: "s9_1" }],
+    choices: [{ label: "Continue...", flag: {}, mood: 1, next: "s9_1" }],
   },
 
   s9_1: {
@@ -973,7 +1029,7 @@ const SCENES = {
       "When we arrived at the tower, Sylvanus was waiting in the yard, acting like he was some master manipulator, but we proved him wrong. It was a messy fight, but we finally found our rhythm. Dion landed the killing blow—shouting my name, as if that would make me swoon—and the wizard fell.",
       "Cassian found and pulled Elias's body from the wreckage; the guy was burned to a crisp, the Hooded Stranger too. As I stood there in the silence, watching Dorian burn the bodies, we scavenged what was left. Among the items were a black iron key and a letter to Lord Adrian in Braxia. It was an endorsement, the golden ticket to get us into the city. Whatever Elias was planning, it died with him, but the road led straight to Braxia. That's where we were headed next.",
     ],
-    choices: [{ label: "Continue toward Braxia...", flag: {s9_1:true}, next: "s10" }],
+    choices: [{ label: "Continue toward Braxia...", flag: {s9_1:true}, mood: 1, next: "s10" }],
   },
 
   s9_2: {
@@ -984,7 +1040,7 @@ const SCENES = {
       "Elias woke me in the middle of the night, and I left a note for the seven newcomers.",
       "\"Went on ahead. Meet you there. -Juno\""
     ],
-    choices: [{ label: "Continue...", flag: {}, next: "s9_2_1" }],
+    choices: [{ label: "Continue...", flag: {}, mood: 1, next: "s9_2_1" }],
   },
 
   s9_2_1: {
@@ -1027,6 +1083,7 @@ const SCENES = {
         {
           label: "Get some rest. Be ready for anything tomorrow. Besides, I don't need no man.",
           flag: { s10_1: true },
+          mood: -1,
           next: "s10_1",
         },
       ];
@@ -1034,6 +1091,7 @@ const SCENES = {
         opts.push({
           label: "Invite Dion to my room. That untamed romantic has shown his devotion. If it's going to happen, it should be tonight.",
           flag: { s10_2: true },
+          mood: -2,
           next: "s10_2",
         });
       }
@@ -1049,6 +1107,7 @@ const SCENES = {
         opts.push({
           label: "Sir Saberic, the Redemption Paladin. He understands me. Two paladins in love would be an unbreakable bond.",
           flag: { s10_4: true },
+          mood: -1,
           next: "s10_4",
         });
       }
@@ -1063,6 +1122,7 @@ const SCENES = {
         opts.push({
           label: "Invite Jaksyn to my room. I'm certain it will be a night to remember.",
           flag: { s10_6: true },
+          mood: 1,
           next: "s10_6",
         });
       }
@@ -1070,6 +1130,7 @@ const SCENES = {
         opts.push({
           label: "Go to Leif. He is the only one who understands there is no one we can trust, which is exactly why I trust him more than the rest. Plus, he feels unusually familiar…",
           flag: { s10_7: true },
+          mood: 1,
           next: "s10_7",
         });
       }
@@ -1077,6 +1138,7 @@ const SCENES = {
         opts.push({
           label: "Pounce on Cassian and go wild!",
           flag: { s10_8: true },
+          mood: 1,
           next: "s10_8",
         });
       }
@@ -1087,7 +1149,7 @@ const SCENES = {
   s10_1: {
     title: "Chapter 10-1: Alone",
     entries: ["I awoke well rested, yet I felt apprehensive towards the dress waiting for me. It was beautifully dangerous looking with black lace and lined with a thin layer of hidden armor and hidden pockets. A dinner party was not my preferred battlefield, but something told me mingling with nobles would not be the only battle I faced today."],
-    choices: [{ label: "Continue...", flag: {}, next: "s11" }],
+    choices: [{ label: "Continue...", flag: {},  mood: -1, next: "s11" }],
   },
   s10_2: {
     title: "Chapter 10-2: Sunflower and Juniper",
@@ -1100,7 +1162,7 @@ const SCENES = {
         "Dion responded with a huge smile, “it’s not the going with Juno, it's the coming.” ",
         "Dorian burst into laughter and shook his head."],
 
-    choices: [{ label: "Continue...", flag: {}, next: "s11" }],
+    choices: [{ label: "Continue...", flag: {}, mood: -2, next: "s11" }],
   },
   s10_3: {
     title: "Chapter 10-3: Gabriel",
@@ -1114,17 +1176,17 @@ const SCENES = {
     entries: ["It was awkward at first. We had fought alongside each other, but this was more of a dance than a battlefield, and neither of us knew how to dance.  We eventually found our rhythm in the dark. ",
       "By dawn, something had changed. The light through the windows seemed brighter. Something inside me felt less grim. "
     ],
-    choices: [{ label: "Continue...", flag: {}, next: "s11" }],
+    choices: [{ label: "Continue...", flag: {}, mood: -2, next: "s11" }],
   },
   s10_5: {
     title: "Chapter 10-5: Dorian",
     entries: ["The morning felt off. I quietly snuck back to my room, but it was already done. There was an unspoken tension between the group that day. "],
-    choices: [{ label: "Continue...", flag: {}, next: "s11" }],
+    choices: [{ label: "Continue...", flag: {}, mood: 1, next: "s11" }],
   },
   s10_6: {
     title: "Chapter 10-6: Jaksyn",
     entries: ["The morning felt off. There was an unspoken tension between the group that day, and Jaksyn tried to lay his sarcastic charm on even thicker. It seemed to make Leif and Cassian on edge. "],
-    choices: [{ label: "Continue...", flag: {}, next: "s11" }],
+    choices: [{ label: "Continue...", flag: {}, mood: 1, next: "s11" }],
   },
   s10_7: {
     title: "Chapter 10-7: Leif",
@@ -1155,9 +1217,9 @@ const SCENES = {
   s10_8: {
     title: "Chapter 10-8: Cassian",
     entries: [
-      "Something about the danger in him felt honest, in a house full of people wearing masks even before the party started.",
+      "The morning felt off. I quietly snuck back to my room, but it was already done. There was an unspoken tension between the group that day. Cassian smiled, which I’m not sure any of us had seen before. Leif seemed distant, like there was a plan rolling around his mind with a puzzle piece he couldn’t place, and Dion was perhaps more oblivious than usual. ",
     ],
-    choices: [{ label: "Continue...", flag: {}, next: "s11" }],
+    choices: [{ label: "Continue...", flag: {},  mood: 1, next: "s11" }],
   },
 
   s11: {
@@ -1174,19 +1236,21 @@ const SCENES = {
           {
             label: "Run. Get out with Leif while you still can.",
             flag: { s11_1: true },
+             mood: 2,
             next: "s11_1",
           },
           {
             label: "Stay and fight for the others.",
             flag: { s11_2: true },
+             mood: -2,
             next: "s11_2",
           },
         ];
       }
       if (path.s10_6 || path.s10_8 || path.s10_5) {
-        return [{ label: "Continue...", flag: {}, next: "s11_2" }];
+        return [{ label: "Continue...", flag: {},  mood: 1, next: "s11_2" }];
       }
-      return [{ label: "Continue...", flag: {s12:true}, next: "s12" }];
+      return [{ label: "Continue...", flag: {s12:true},  mood: 1, next: "s12" }];
     },
   },
 
@@ -1196,7 +1260,8 @@ const SCENES = {
     choices: [
       {
         label: "Continue...",
-        flag: {},
+        flag: {}, 
+        mood: 1,
         next: (p) => (p.s1_1 && p.s6_2 ? "s11_1_1" : "s11_1_2"),
       },
     ],
@@ -1248,12 +1313,12 @@ const SCENES = {
     ],
     choices: (path) => {
       if (path.s6_1 && path.s10_2) {
-        return [{ label: "Continue...", flag: {}, next: "s13" }];
+        return [{ label: "Continue...", flag: {},  mood: 1, next: "s13" }];
       }
       if (path.s6_3 && path.s10_4) {
-        return [{ label: "Continue...", flag: {}, next: "s13" }];
+        return [{ label: "Continue...", flag: {},  mood: 1, next: "s13" }];
       }
-      return [{ label: "Continue...", flag: {}, next: "s12_3" }];
+      return [{ label: "Continue...", flag: {},  mood: 1, next: "s12_3" }];
     },
   },
 
@@ -1277,14 +1342,14 @@ const SCENES = {
     choices: (path) => {
       if (path.s6_1 && path.s10_2) {
         // vengeance and dion
-        return [{ label: "Challenge Hrathgar. Buy them the time they need.", flag: {}, next: "s13_1" }];
+        return [{ label: "Challenge Hrathgar. Buy them the time they need.",  mood: -1, flag: {}, next: "s13_1" }];
       }
       if (path.s6_3 && path.s10_4) {
         // devotion and saberic
-        return [{ label: "Stand together.", flag: {s13_2:true}, next: "s13_2" }];
+        return [{ label: "Stand together.", flag: {s13_2:true},  mood: -2, next: "s13_2" }];
       }
       // else
-      return [{ label: "Continue...", flag: {}, next: "s13_3" }];
+      return [{ label: "Continue...", flag: {},  mood: 1, next: "s13_3" }];
     },
   },
 
@@ -1363,6 +1428,7 @@ const symbols = document.getElementById("symbols");
 const backBtn = document.getElementById("back");
 const params = new URLSearchParams(window.location.search);
 const playBtn = document.getElementById("play-aloud");
+const mood = document.getElementById("mood");
 
 playBtn.onclick = togglePlayAloud;
 restart.onclick = restartJournal;
