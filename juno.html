@@ -672,8 +672,9 @@ const SCENES = {
     entries: [
       "May 30, 1749",
       "Juno's journal ends here.",
-      "Shortly after the return of the undead lord Xavier, a great fire broke out in Voxborough. The violence which sparked it stretched beyond the outskirts. Juno's body, the body of a nameless malnourished servant, was found amongst the wreckage of the monastery where she was a prisoner most her life. ",
-      "THE END"
+      "Shortly after Xavier's return on the blood moon, a great fire broke out in Voxborough. The violence which sparked it stretched beyond the outskirts. The malnourished body of a ward servant, presumably the author of this journal, was found amongst the wreckage of the monastery where she was imprisoned most of her life. ",
+      "    - Elmyra Voss, archivist"     ,
+      "THE END",
     ],
     choices: [],
   },
@@ -1314,19 +1315,35 @@ const SCENES = {
   },
 
   s12: {
-    title: "Chapter 12: Azmekal",
+    title: "Chapter 12: Neutrality",
     entries: [
-      "Vera Morningstar had been taken for what she'd done to save Cassian. We appealed to Lord Adrian for help against Azmekal, but he would not budge. He was too proud of holding the delicate balance between humans and vampires, demons and mortals, teetering on the brink of war and benefiting from being the middle ground. Azmekal waited beneath Braxia, his forces growing larger. We must move against him. We must try.",
+      "Vera Morningstar had been taken for what she'd done to save Cassian. We appealed to Lord Adrian for help against Azmekal, but he would not budge. He was too proud of holding the delicate balance between humans and vampires, demons and mortals, teetering on the brink of war and benefiting from being the middle ground. Azmekal waited beneath Braxia, his forces growing larger. We must move against him. We must try even if we stand alone.",
     ],
     choices: (path) => {
       if (path.s6_1 && path.s10_2) {
-        return [{ label: "Continue...", flag: {},  mood: 1, next: "s13" }];
+        return [{ label: "Continue...", flag: {},  mood: 1, next: "s12_1" }];
       }
       if (path.s6_3 && path.s10_4) {
-        return [{ label: "Continue...", flag: {},  mood: 1, next: "s13" }];
+        return [{ label: "Continue...", flag: {},  mood: 1, next: "s12_1" }];
       }
       return [{ label: "Continue...", flag: {},  mood: 1, next: "s12_3" }];
     },
+  },
+
+  s12_1: {
+      title: "Chapter 12-1: Azmekal",
+      entries: [
+        `The stench of the sewers under Braxia was nauseating with a the sharp, metallic tang of blood and machine oil.`,
+        `The water was a constant enemy, rushing through the tunnels in surges that threatened to smash us against the walls. Then a fight with those mutilated thralls, I barely kept my footing. I remember the panic as ${path.s10_4 ? "Saberic":"Dion"} went down, my chest tightened, but I held my ground, laying my hands on him to stabilize him and pull him back from the edge of death.`,
+        "Eventually, we reached a massive, vault-like door. Lief cracked it, and the world shifted from wet tunnels to something purely industrial—clanging gears, hissing pneumatics, and the overwhelming scent of copper.",
+        "That’s where we found Azmekal. He looked like an 8-foot monstrosity, half-flesh and half-machine, with a metal mask emitting green smoke, hunched over a table, hacking away.",
+        "Dorian tried to talk to him. He wanted his brother Thorin’s soul back, but there was no reasoning with a demon like that. When Dorian lost his patience and punched him, the room erupted. The fight was a blur of chaos. Azmekal’s mechanical arms were everywhere, blades and claws clashing against us while he hid behind shields of magic. Thralls with mechanical body parts crawled from pits. I moved to protect my friends, striking at anything that came near.",
+        (path.s10_4 
+          ? "We tore his limbs apart and Dorian dumped his head into a vat of acid. Monsters always look smaller once they're dead. We walked out triumphantly as a team with confidence and trust in each other. "
+          : "It was a grueling slog, fighting through acidic rain and mechanical terror. We knocked away at his arms and forced him into a vat of acid. We won, but we barely limped out of there. Victory came more like relief than a celebration. "
+        )
+      ],
+      choices: [{ label: "Continue...", flag: {}, mood: -1, next: "s13" }],
   },
 
   s12_3: {
@@ -1344,7 +1361,8 @@ const SCENES = {
   s13: {
     title: "Chapter 13: Brekka",
     entries: [
-      "The frozen throne of Brekka waited beneath a dying sky. Somewhere below it, the werewolf demon lord Hrathgar was already waiting for us.",
+      "Gabriel's visions led us towards the next demon lord in Brekka. ",
+      "We traveled through dark tunnels in the mountains and emerged onto a frozen lake. Wolves howled in the distance, layered with dissonance with the sound of the biting cold wind.  The white frozen throne of Brekka waited beneath a gray sky. Somewhere below it, the werewolf demon lord Hrathgar was already waiting for us.",
     ],
     choices: (path) => {
       if (path.s6_1 && path.s10_2) {
@@ -1417,7 +1435,7 @@ const SCENES = {
 <footer>
   <button id="play-aloud"> ▶ Play Aloud </button>
 
-  <button id="back"> ⏴Back a Page </button>
+  <button id="back"> ← Back a Page </button>
 
   <button id="restart"> ↺  Restart </button>
 
