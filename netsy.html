@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Netsy — Goalie Stat Tracker</title>
+<style>
+  :root {
+    --bg: #0c1117;
+    --panel: #161d26;
+    --panel-border: #2a3441;
+    --rink-blue: #4a9be0;
+    --rink-blue-dark: #10202f;
+    --red: #f0555c;
+    --green: #3ed191;
+    --gray: #7c8896;
+    --ink: #e9eef3;
+    --ink-dim: #93a2b1;
+    --gold: #f0bb52;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  #app {
+    min-height: 100vh;
+    padding: 14px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  .display {
+    font-family: Impact, Haettenschweiler, "Arial Narrow Bold", "Arial Narrow", sans-serif;
+    letter-spacing: 0.5px;
+    font-weight: 400;
+  }
+  .header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
+  .header h1 { font-size: 34px; margin: 0; color: var(--ink); line-height: 1; }
+  .header .puck { color: var(--red); }
+  .info-toggle {
+    font-size: 12px; color: var(--rink-blue); background: none; border: none;
+    font-weight: 600; cursor: pointer; padding: 4px;
+  }
+  .info-panel {
+    background: var(--panel); border: 1px solid var(--panel-border); border-radius: 10px;
+    padding: 10px 12px; margin-bottom: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+  }
+  .info-field { display: flex; flex-direction: column; gap: 3px; }
+  .info-field label {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-dim); font-weight: 600;
+  }
+  .info-field input {
+    border: 1px solid var(--panel-border); border-radius: 6px; padding: 6px 8px; font-size: 13px;
+    font-family: inherit; background: #0f151d; color: var(--ink);
+  }
+  .info-field input::-webkit-calendar-picker-indicator { filter: invert(0.8); }
+  .scoreboard {
+    background: var(--rink-blue-dark); border: 1px solid var(--panel-border); border-radius: 12px;
+    padding: 12px 14px; color: white; display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px;
+  }
+  .sb-team { text-align: center; flex: 1; }
+  .sb-team .name {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.75; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .sb-team .score { font-size: 40px; line-height: 1; }
+  .sb-mine { display: flex; align-items: center; justify-content: center; gap: 8px; }
+  .sb-btn {
+    width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.08); color: white; font-size: 14px; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; padding: 0;
+  }
+  .sb-dash { font-size: 24px; opacity: 0.5; padding: 0 4px; }
+  .sv-badge { text-align: center; border-left: 1px solid rgba(255,255,255,0.15); padding-left: 12px; margin-left: 4px; }
+  .sv-badge .val { font-size: 22px; color: var(--gold); }
+  .sv-badge .lbl { font-size: 9px; text-transform: uppercase; opacity: 0.7; letter-spacing: 0.06em; }
+  .rink-wrap { position: relative; margin-bottom: 12px; }
+  .rink-svg {
+    width: 100%; display: block; border-radius: 12px;
+    background: linear-gradient(180deg, #1c2b3b 0%, #131c27 100%);
+    border: 1px solid var(--panel-border); cursor: default;
+  }
+  .rink-svg.clickable { cursor: crosshair; }
+  .hint { text-align: center; font-size: 12.5px; font-weight: 600; color: var(--rink-blue); min-height: 18px; margin-bottom: 8px; }
+  .actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
+  .act-btn {
+    border: none; border-radius: 9px; padding: 12px 4px; font-family: inherit; font-size: 16px; font-weight: 700;
+    letter-spacing: 0.3px; cursor: pointer; color: white; transition: transform 0.08s ease, opacity 0.15s ease;
+  }
+  .act-btn:active { transform: scale(0.96); }
+  .act-goal { background: var(--red); }
+  .act-save { background: var(--green); }
+  .act-miss { background: var(--gray); }
+  .act-edit { background: var(--rink-blue); }
+  .act-btn.inactive { opacity: 0.45; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
+  .stat-card { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 10px; padding: 8px 4px 6px; text-align: center; }
+  .stat-card .n { font-size: 22px; font-family: inherit; font-weight: 700; color: var(--ink); }
+  .stat-card .l { font-size: 9.5px; text-transform: uppercase; color: var(--ink-dim); font-weight: 600; letter-spacing: 0.04em; }
+  .stat-adjust { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 6px; }
+  .stat-adjust button {
+    width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--panel-border);
+    background: #1e2733; color: var(--ink); font-size: 13px; line-height: 1; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; padding: 0;
+  }
+  .stat-adjust button:active { transform: scale(0.94); }
+  .log-title { font-size: 12px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-dim); font-weight: 700; margin: 4px 0 6px 2px; }
+  .log-list { display: flex; flex-direction: column; gap: 6px; max-height: 240px; overflow-y: auto; }
+  .log-empty { font-size: 13px; color: var(--ink-dim); padding: 10px 2px; }
+  .log-item {
+    display: flex; align-items: center; gap: 10px; background: var(--panel); border: 1px solid var(--panel-border);
+    border-radius: 8px; padding: 7px 10px; cursor: pointer;
+  }
+  .log-badge {
+    width: 24px; height: 24px; border-radius: 50%; color: white; font-size: 12px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .log-mid { flex: 1; min-width: 0; }
+  .log-mid .t1 { font-size: 13px; font-weight: 600; color: var(--ink); }
+  .log-mid .t2 { font-size: 11.5px; color: var(--ink-dim); }
+  .log-chev { color: var(--ink-dim); font-size: 14px; }
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: flex-end; justify-content: center; z-index: 50; }
+  .modal {
+    background: var(--panel); width: 100%; max-width: 480px; border: 1px solid var(--panel-border); border-bottom: none;
+    border-radius: 16px 16px 0 0; padding: 18px 18px 22px; max-height: 85vh; overflow-y: auto;
+  }
+  .modal h2 { font-family: inherit; font-weight: 700; font-size: 20px; margin: 0 0 12px; color: var(--ink); }
+  .form-row { margin-bottom: 12px; }
+  .form-row label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-dim); font-weight: 700; margin-bottom: 5px; }
+  .form-row input[type="text"] {
+    width: 100%; border: 1px solid var(--panel-border); border-radius: 7px; padding: 9px 10px;
+    font-size: 14px; font-family: inherit; background: #0f151d; color: var(--ink);
+  }
+  .period-row { display: flex; gap: 6px; }
+  .period-chip {
+    flex: 1; text-align: center; padding: 8px 0; border-radius: 7px; border: 1px solid var(--panel-border);
+    font-size: 13px; font-weight: 600; cursor: pointer; background: #0f151d; color: var(--ink-dim);
+  }
+  .period-chip.on { background: var(--rink-blue); color: white; border-color: var(--rink-blue); }
+  .check-row { display: flex; align-items: center; gap: 8px; }
+  .check-row input { width: 18px; height: 18px; }
+  .modal-actions { display: flex; gap: 8px; margin-top: 16px; }
+  .modal-actions button { flex: 1; border: none; border-radius: 8px; padding: 12px 0; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .btn-cancel { background: #232d3a; color: var(--ink-dim); }
+  .btn-save { background: var(--rink-blue); color: white; }
+  .btn-delete { background: #3a2126; color: var(--red); flex: 0 0 44px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+(function () {
+  "use strict";
+
+  var PERIODS = ["1", "2", "3", "OT", "SO"];
+  var MARKER_COLOR = { goal: "#f0555c", save: "#3ed191", miss: "#7c8896" };
+  var MARKER_LABEL = { goal: "G", save: "S", miss: "M" };
+
+  var state = {
+    gameInfo: {
+      date: new Date().toISOString().slice(0, 10),
+      location: "",
+      goalie: "",
+      teamName: "My Team",
+      opponentName: "Opponent"
+    },
+    infoOpen: true,
+    teamGoals: 0,
+    shots: [],
+    activeAction: null,
+    draft: null
+  };
+
+  function uid() {
+    return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 8);
+  }
+
+  function emptyDraft(type, x, y) {
+    return {
+      type: type,
+      x: (x === undefined ? null : x),
+      y: (y === undefined ? null : y),
+      period: null,
+      breakaway: false,
+      rebound: false,
+      player: "",
+      notes: ""
+    };
+  }
+
+  function escapeHtml(str) {
+    return String(str == null ? "" : str)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
+  // ---------- state mutators ----------
+
+  function updateGameInfo(field, value) {
+    state.gameInfo[field] = value;
+    render();
+  }
+
+  function toggleInfo() {
+    state.infoOpen = !state.infoOpen;
+    render();
+  }
+
+  function adjustTeamGoals(delta) {
+    state.teamGoals = Math.max(0, state.teamGoals + delta);
+    render();
+  }
+
+  function setActiveAction(action) {
+    state.activeAction = (state.activeAction === action ? null : action);
+    render();
+  }
+
+  function handleGraphicClick(evt) {
+    if (state.activeAction === "edit") return;
+    if (state.activeAction !== "goal" && state.activeAction !== "save" && state.activeAction !== "miss") return;
+    var svg = document.getElementById("rink-svg");
+    var rect = svg.getBoundingClientRect();
+    var x = Math.min(100, Math.max(0, ((evt.clientX - rect.left) / rect.width) * 100));
+    var y = Math.min(100, Math.max(0, ((evt.clientY - rect.top) / rect.height) * 100));
+    state.draft = emptyDraft(state.activeAction, x, y);
+    render();
+  }
+
+  function openEdit(id) {
+    var shot = state.shots.find(function (s) { return s.id === id; });
+    if (!shot) return;
+    var d = {};
+    for (var k in shot) d[k] = shot[k];
+    d.editingId = id;
+    state.draft = d;
+    render();
+  }
+
+  function setDraftField(field, value) {
+    if (!state.draft) return;
+    state.draft[field] = value;
+    render();
+  }
+
+  function togglePeriod(p) {
+    if (!state.draft) return;
+    state.draft.period = (state.draft.period === p ? null : p);
+    render();
+  }
+
+  function saveDraft() {
+    if (!state.draft) return;
+    if (state.draft.editingId) {
+      var id = state.draft.editingId;
+      state.shots = state.shots.map(function (s) {
+        if (s.id !== id) return s;
+        var merged = {};
+        for (var k in state.draft) merged[k] = state.draft[k];
+        merged.id = id;
+        delete merged.editingId;
+        return merged;
+      });
+    } else {
+      var toAdd = {};
+      for (var k2 in state.draft) toAdd[k2] = state.draft[k2];
+      toAdd.id = uid();
+      toAdd.ts = Date.now();
+      state.shots.push(toAdd);
+    }
+    state.draft = null;
+    state.activeAction = null;
+    render();
+  }
+
+  function deleteDraft() {
+    if (state.draft && state.draft.editingId) {
+      var id = state.draft.editingId;
+      state.shots = state.shots.filter(function (s) { return s.id !== id; });
+    }
+    state.draft = null;
+    state.activeAction = null;
+    render();
+  }
+
+  function cancelDraft() {
+    state.draft = null;
+    state.activeAction = null;
+    render();
+  }
+
+  function quickAdd(type) {
+    var s = emptyDraft(type);
+    s.id = uid();
+    s.ts = Date.now();
+    state.shots.push(s);
+    render();
+  }
+
+  function quickRemove(type) {
+    for (var i = state.shots.length - 1; i >= 0; i--) {
+      if (state.shots[i].type === type) {
+        state.shots.splice(i, 1);
+        break;
+      }
+    }
+    render();
+  }
+
+  // ---------- rendering ----------
+
+  function goalieGraphicSvg() {
+    return (
+      '<svg id="rink-svg" class="rink-svg' + (state.activeAction === "goal" || state.activeAction === "save" || state.activeAction === "miss" ? " clickable" : "") + '" viewBox="0 0 400 320">' +
+        '<path d="M 130 260 A 90 90 0 0 1 270 260 Z" fill="#3a6ea8" opacity="0.25" />' +
+        '<rect x="90" y="40" width="220" height="140" fill="none" stroke="#4a5b6d" stroke-width="2" />' +
+        gridLines() +
+        '<rect x="82" y="34" width="10" height="226" fill="#f0555c" />' +
+        '<rect x="308" y="34" width="10" height="226" fill="#f0555c" />' +
+        '<rect x="82" y="34" width="236" height="10" fill="#f0555c" />' +
+        '<line x1="60" y1="260" x2="340" y2="260" stroke="#d0262c" stroke-width="3" opacity="0.85" />' +
+        '<g>' +
+          '<rect x="168" y="252" width="26" height="10" rx="2" fill="#0d1117" />' +
+          '<rect x="206" y="252" width="26" height="10" rx="2" fill="#0d1117" />' +
+          '<rect x="158" y="178" width="42" height="80" rx="8" fill="#eef2f5" stroke="#2f6da3" stroke-width="3" />' +
+          '<rect x="200" y="178" width="42" height="80" rx="8" fill="#eef2f5" stroke="#2f6da3" stroke-width="3" />' +
+          '<line x1="100" y1="132" x2="199" y2="247" stroke="#0d1117" stroke-width="10" stroke-linecap="round" />' +
+          '<line x1="100" y1="132" x2="199" y2="247" stroke="#f4f6f8" stroke-width="7" stroke-linecap="round" />' +
+          '<rect x="178" y="244" width="44" height="10" rx="3" fill="#f4f6f8" stroke="#0d1117" stroke-width="1.5" />' +
+          '<rect x="163" y="160" width="74" height="34" rx="10" fill="#2f6da3" />' +
+          '<rect x="150" y="98" width="100" height="68" rx="14" fill="#2f6da3" />' +
+          '<rect x="192" y="98" width="16" height="68" fill="#f0555c" opacity="0.9" />' +
+          '<rect x="112" y="108" width="38" height="20" rx="9" fill="#2f6da3" transform="rotate(-18 131 118)" />' +
+          '<rect x="90" y="122" width="26" height="34" rx="4" fill="#0d1117" stroke="#3a4451" stroke-width="1" />' +
+          '<rect x="255" y="95" width="42" height="20" rx="9" fill="#2f6da3" transform="rotate(-45 255 105)" />' +
+          '<ellipse cx="285" cy="75" rx="19" ry="16" fill="#c79a5b" stroke="#0d1117" stroke-width="2" />' +
+          '<rect x="190" y="78" width="20" height="18" fill="#c79a5b" />' +
+          '<circle cx="200" cy="66" r="26" fill="#2f6da3" />' +
+          '<path d="M 178 66 Q 200 90 222 66" fill="none" stroke="#0d1117" stroke-width="2" />' +
+          '<line x1="182" y1="60" x2="218" y2="60" stroke="#c7d2d8" stroke-width="2" />' +
+          '<line x1="182" y1="68" x2="218" y2="68" stroke="#c7d2d8" stroke-width="2" />' +
+          '<line x1="182" y1="76" x2="218" y2="76" stroke="#c7d2d8" stroke-width="2" />' +
+        '</g>' +
+        markers() +
+      '</svg>'
+    );
+  }
+
+  function gridLines() {
+    var out = "";
+    for (var i = 0; i < 9; i++) {
+      var y = 40 + i * 17.5;
+      out += '<line x1="90" y1="' + y + '" x2="310" y2="' + y + '" stroke="#4a5b6d" stroke-width="1" />';
+    }
+    for (var j = 0; j < 12; j++) {
+      var x = 90 + j * 20;
+      out += '<line x1="' + x + '" y1="40" x2="' + x + '" y2="180" stroke="#4a5b6d" stroke-width="1" />';
+    }
+    return out;
+  }
+
+  function markers() {
+    var out = "";
+    state.shots.forEach(function (s) {
+      if (s.x === null || s.y === null || s.x === undefined || s.y === undefined) return;
+      var px = (s.x / 100) * 400;
+      var py = (s.y / 100) * 320;
+      var r = state.activeAction === "edit" ? 12 : 9;
+      out +=
+        '<g class="shot-marker" data-id="' + s.id + '" transform="translate(' + px + ',' + py + ')" style="cursor:pointer">' +
+          '<circle r="' + r + '" fill="' + MARKER_COLOR[s.type] + '" stroke="white" stroke-width="2" opacity="0.92" />' +
+          '<text text-anchor="middle" dy="4" font-size="10" fill="white" font-weight="700">' + MARKER_LABEL[s.type] + '</text>' +
+        '</g>';
+    });
+    return out;
+  }
+
+  function statsFromShots() {
+    var goals = 0, saves = 0, misses = 0;
+    state.shots.forEach(function (s) {
+      if (s.type === "goal") goals++;
+      else if (s.type === "save") saves++;
+      else if (s.type === "miss") misses++;
+    });
+    var shotsFaced = goals + saves;
+    var savePct = shotsFaced > 0 ? ((saves / shotsFaced) * 100).toFixed(1) : null;
+    return { goals: goals, saves: saves, misses: misses, shotsFaced: shotsFaced, savePct: savePct };
+  }
+
+  function hintText() {
+    if (state.activeAction === "goal") return "Tap where the puck crossed the line";
+    if (state.activeAction === "save") return "Tap where the goalie made the save";
+    if (state.activeAction === "miss") return "Tap where the shot missed everything";
+    if (state.activeAction === "edit") return "Tap a marker or a log entry to edit it";
+    return "Choose an action to log a shot";
+  }
+
+  function logItemLabel(s) {
+    if (s.type === "goal") return "Goal against";
+    if (s.type === "save") return "Save";
+    return "Missed net";
+  }
+
+  function logItemSub(s) {
+    var parts = [s.period ? ("Period " + s.period) : "Period —"];
+    if (s.breakaway) parts.push("Breakaway");
+    if (s.rebound) parts.push("Rebound");
+    if (s.notes) parts.push(s.notes);
+    return parts.join(" · ");
+  }
+
+  function modalHtml() {
+    if (!state.draft) return "";
+    var d = state.draft;
+    var titleType = d.editingId ? "Edit Shot" : (d.type === "goal" ? "Goal Details" : d.type === "save" ? "Save Details" : "Miss Details");
+    var chips = PERIODS.map(function (p) {
+      return '<div class="period-chip' + (d.period === p ? " on" : "") + '" data-period="' + p + '">' + p + '</div>';
+    }).join("");
+    return (
+      '<div class="modal-backdrop" id="modal-backdrop">' +
+        '<div class="modal" id="modal-card">' +
+          '<h2 class="display">' + escapeHtml(titleType) + '</h2>' +
+          '<div class="form-row">' +
+            '<label>Period</label>' +
+            '<div class="period-row" id="period-row">' + chips + '</div>' +
+          '</div>' +
+          '<div class="form-row check-row">' +
+            '<input type="checkbox" id="draft-breakaway" ' + (d.breakaway ? "checked" : "") + ' />' +
+            '<label for="draft-breakaway" style="margin-bottom:0">Breakaway</label>' +
+          '</div>' +
+          '<div class="form-row check-row">' +
+            '<input type="checkbox" id="draft-rebound" ' + (d.rebound ? "checked" : "") + ' />' +
+            '<label for="draft-rebound" style="margin-bottom:0">Rebound</label>' +
+          '</div>' +
+          '<div class="form-row">' +
+            '<label>' + (d.type === "goal" ? "Scorer" : "Shooter") + ' (optional)</label>' +
+            '<input type="text" id="draft-player" placeholder="Player name or number" value="' + escapeHtml(d.player) + '" />' +
+          '</div>' +
+          '<div class="form-row">' +
+            '<label>Notes (optional)</label>' +
+            '<input type="text" id="draft-notes" placeholder="e.g. glove side, wrist shot" value="' + escapeHtml(d.notes) + '" />' +
+          '</div>' +
+          '<div class="modal-actions">' +
+            (d.editingId ? '<button class="btn-delete" id="btn-delete">✕</button>' : "") +
+            '<button class="btn-cancel" id="btn-cancel">Cancel</button>' +
+            '<button class="btn-save" id="btn-save">' + (d.editingId ? "Save Changes" : "Add Shot") + '</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  function template() {
+    var gi = state.gameInfo;
+    var stats = statsFromShots();
+
+    var infoPanel = !state.infoOpen ? "" : (
+      '<div class="info-panel">' +
+        '<div class="info-field"><label>Date</label><input type="date" id="gi-date" value="' + escapeHtml(gi.date) + '" /></div>' +
+        '<div class="info-field"><label>Location</label><input type="text" id="gi-location" placeholder="Rink name" value="' + escapeHtml(gi.location) + '" /></div>' +
+        '<div class="info-field"><label>Goalie</label><input type="text" id="gi-goalie" placeholder="Name or #" value="' + escapeHtml(gi.goalie) + '" /></div>' +
+        '<div class="info-field"><label>My Team</label><input type="text" id="gi-team" value="' + escapeHtml(gi.teamName) + '" /></div>' +
+        '<div class="info-field"><label>Opponent</label><input type="text" id="gi-opponent" value="' + escapeHtml(gi.opponentName) + '" /></div>' +
+      '</div>'
+    );
+
+    var logItems = state.shots.length === 0
+      ? '<div class="log-empty">No shots logged yet — tap Goal, Save, or Miss to start.</div>'
+      : state.shots.slice().reverse().map(function (s) {
+          var playerBit = s.player ? (" — " + escapeHtml(s.player)) : "";
+          return (
+            '<div class="log-item" data-id="' + s.id + '">' +
+              '<div class="log-badge" style="background:' + MARKER_COLOR[s.type] + '">' + MARKER_LABEL[s.type] + '</div>' +
+              '<div class="log-mid">' +
+                '<div class="t1">' + logItemLabel(s) + playerBit + '</div>' +
+                '<div class="t2">' + escapeHtml(logItemSub(s)) + '</div>' +
+              '</div>' +
+              '<div class="log-chev">&rsaquo;</div>' +
+            '</div>'
+          );
+        }).join("");
+
+    return (
+      '<div class="header">' +
+        '<h1 class="display">Netsy<span class="puck">.</span></h1>' +
+        '<button class="info-toggle" id="info-toggle">' + (state.infoOpen ? "HIDE INFO" : "GAME INFO") + '</button>' +
+      '</div>' +
+      infoPanel +
+      '<div class="scoreboard">' +
+        '<div class="sb-team">' +
+          '<div class="name display">' + escapeHtml(gi.teamName || "My Team") + '</div>' +
+          '<div class="sb-mine">' +
+            '<button class="sb-btn" id="team-minus">\u2212</button>' +
+            '<span class="score display">' + state.teamGoals + '</span>' +
+            '<button class="sb-btn" id="team-plus">+</button>' +
+          '</div>' +
+        '</div>' +
+        '<span class="sb-dash display">\u2014</span>' +
+        '<div class="sb-team">' +
+          '<div class="name display">' + escapeHtml(gi.opponentName || "Opponent") + '</div>' +
+          '<div class="score display">' + stats.goals + '</div>' +
+        '</div>' +
+        '<div class="sv-badge">' +
+          '<div class="val display">' + (stats.savePct !== null ? stats.savePct + "%" : "\u2014") + '</div>' +
+          '<div class="lbl">SV%</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="rink-wrap">' + goalieGraphicSvg() + '</div>' +
+      '<div class="hint">' + hintText() + '</div>' +
+      '<div class="actions">' +
+        '<button class="act-btn act-goal' + (state.activeAction && state.activeAction !== "goal" ? " inactive" : "") + '" data-action="goal">Goal</button>' +
+        '<button class="act-btn act-save' + (state.activeAction && state.activeAction !== "save" ? " inactive" : "") + '" data-action="save">Save</button>' +
+        '<button class="act-btn act-miss' + (state.activeAction && state.activeAction !== "miss" ? " inactive" : "") + '" data-action="miss">Miss</button>' +
+        '<button class="act-btn act-edit' + (state.activeAction && state.activeAction !== "edit" ? " inactive" : "") + '" data-action="edit">Edit</button>' +
+      '</div>' +
+      '<div class="stats-grid">' +
+        '<div class="stat-card"><div class="n display">' + stats.goals + '</div><div class="l">Goals Against</div>' +
+          '<div class="stat-adjust"><button data-qr="goal">\u2212</button><button data-qa="goal">+</button></div></div>' +
+        '<div class="stat-card"><div class="n display">' + stats.saves + '</div><div class="l">Saves</div>' +
+          '<div class="stat-adjust"><button data-qr="save">\u2212</button><button data-qa="save">+</button></div></div>' +
+        '<div class="stat-card"><div class="n display">' + stats.misses + '</div><div class="l">Misses</div>' +
+          '<div class="stat-adjust"><button data-qr="miss">\u2212</button><button data-qa="miss">+</button></div></div>' +
+        '<div class="stat-card"><div class="n display">' + stats.shotsFaced + '</div><div class="l">Shots on Goal</div></div>' +
+      '</div>' +
+      '<div class="log-title">Shot Log</div>' +
+      '<div class="log-list">' + logItems + '</div>' +
+      modalHtml()
+    );
+  }
+
+  function attachEvents() {
+    var infoToggle = document.getElementById("info-toggle");
+    if (infoToggle) infoToggle.onclick = toggleInfo;
+
+    var fieldMap = { "gi-date": "date", "gi-location": "location", "gi-goalie": "goalie", "gi-team": "teamName", "gi-opponent": "opponentName" };
+    Object.keys(fieldMap).forEach(function (id) {
+      var el = document.getElementById(id);
+      if (el) el.oninput = function () { updateGameInfo(fieldMap[id], el.value); };
+    });
+
+    var teamMinus = document.getElementById("team-minus");
+    var teamPlus = document.getElementById("team-plus");
+    if (teamMinus) teamMinus.onclick = function () { adjustTeamGoals(-1); };
+    if (teamPlus) teamPlus.onclick = function () { adjustTeamGoals(1); };
+
+    var svg = document.getElementById("rink-svg");
+    if (svg) svg.onclick = handleGraphicClick;
+
+    document.querySelectorAll(".shot-marker").forEach(function (el) {
+      el.addEventListener("click", function (e) {
+        e.stopPropagation();
+        openEdit(el.getAttribute("data-id"));
+      });
+    });
+
+    document.querySelectorAll("[data-action]").forEach(function (el) {
+      el.onclick = function () { setActiveAction(el.getAttribute("data-action")); };
+    });
+
+    document.querySelectorAll("[data-qa]").forEach(function (el) {
+      el.onclick = function () { quickAdd(el.getAttribute("data-qa")); };
+    });
+    document.querySelectorAll("[data-qr]").forEach(function (el) {
+      el.onclick = function () { quickRemove(el.getAttribute("data-qr")); };
+    });
+
+    document.querySelectorAll(".log-item").forEach(function (el) {
+      el.onclick = function () { openEdit(el.getAttribute("data-id")); };
+    });
+
+    var backdrop = document.getElementById("modal-backdrop");
+    var card = document.getElementById("modal-card");
+    if (backdrop) backdrop.onclick = cancelDraft;
+    if (card) card.onclick = function (e) { e.stopPropagation(); };
+
+    var periodRow = document.getElementById("period-row");
+    if (periodRow) {
+      periodRow.querySelectorAll(".period-chip").forEach(function (el) {
+        el.onclick = function () { togglePeriod(el.getAttribute("data-period")); };
+      });
+    }
+
+    var breakawayBox = document.getElementById("draft-breakaway");
+    if (breakawayBox) breakawayBox.onchange = function () { setDraftField("breakaway", breakawayBox.checked); };
+    var reboundBox = document.getElementById("draft-rebound");
+    if (reboundBox) reboundBox.onchange = function () { setDraftField("rebound", reboundBox.checked); };
+    var playerInput = document.getElementById("draft-player");
+    if (playerInput) playerInput.oninput = function () { setDraftField("player", playerInput.value); };
+    var notesInput = document.getElementById("draft-notes");
+    if (notesInput) notesInput.oninput = function () { setDraftField("notes", notesInput.value); };
+
+    var btnCancel = document.getElementById("btn-cancel");
+    var btnSave = document.getElementById("btn-save");
+    var btnDelete = document.getElementById("btn-delete");
+    if (btnCancel) btnCancel.onclick = cancelDraft;
+    if (btnSave) btnSave.onclick = saveDraft;
+    if (btnDelete) btnDelete.onclick = deleteDraft;
+  }
+
+  function render() {
+    var active = document.activeElement;
+    var activeId = active && active.id;
+    var selStart = active && typeof active.selectionStart === "number" ? active.selectionStart : null;
+    var selEnd = active && typeof active.selectionEnd === "number" ? active.selectionEnd : null;
+
+    var root = document.getElementById("app");
+    root.innerHTML = template();
+    attachEvents();
+
+    if (activeId) {
+      var el = document.getElementById(activeId);
+      if (el) {
+        el.focus();
+        if (selStart !== null && el.setSelectionRange) {
+          try { el.setSelectionRange(selStart, selEnd); } catch (e) {}
+        }
+      }
+    }
+  }
+
+  render();
+})();
+</script>
+</body>
+</html>
