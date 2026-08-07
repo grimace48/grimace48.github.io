@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Netsy — Goalie Stat Tracker</title>
+<title>Netsy — Goalie Scorekeeper</title>
 <style>
   :root {
     --bg: #0c1117;
@@ -319,8 +319,8 @@
     return (
       '<svg id="rink-svg" class="rink-svg' + (state.activeAction === "goal" || state.activeAction === "save" || state.activeAction === "miss" ? " clickable" : "") + '" viewBox="0 0 400 320">' +
         '<path d="M 130 260 A 90 90 0 0 1 270 260 Z" fill="#3a6ea8" opacity="0.25" />' +
+        '<img src ="./images/goalie.jpg" width="300" />' +
         '<g>' +
-          '<img src ="./images/goalie.jpg" />' +
         '</g>' +
         markers() +
       '</svg>'
