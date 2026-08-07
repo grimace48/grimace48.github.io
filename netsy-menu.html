@@ -55,7 +55,14 @@
   }
   .rink-icon { width: 96px; height: 78px; margin-bottom: 10px; }
   .title { font-size: 62px; line-height: 1; margin: 0; color: var(--ink); }
-  .title .puck { color: var(--red); }
+  .title .puck {
+  display: inline-flex;
+  align-items: flex-end;
+  margin-left: 4px;
+  margin-bottom: 6px;
+  }
+  .puck-icon { display: block; }
+  
   .tagline {
     font-size: 12.5px;
     text-transform: uppercase;
@@ -221,6 +228,10 @@
               '<li>Track period, breakaways, and rebounds</li>' +
               '<li>Live scoreboard and save percentage</li>' +
             '</ul>' +
+            '<p>Dedicated to: Max</p>' +
+            '<p>Lead developer: grim</p>' +
+            '<p> <a href="http://paypal.me/GrimArcades">Support This Project</a> - I hate being bombarded with ads, so my goal is to never embed ads in my projects. If you enjoy this game, please consider making a donation to show your gratitude!</p>' +
+            '<p>Privacy Policy: 8/7/2026 This app does not collect, store, or transmit any personal information. Game data is stored only on your device and never shared.</p>' +
             '<div class="about-version">Netsy v1.0 &mdash; Free Edition</div>' +
             '<div class="modal-actions"><button id="modal-ok">Close</button></div>' +
           '</div>' +
@@ -244,7 +255,12 @@
     return (
       '<div class="logo-wrap">' +
         rinkIconSvg +
-        '<h1 class="title display">Netsy<span class="puck">.</span></h1>' +
+        '<h1 class="title display">Netsy<span class="puck"><svg class="puck-icon" width="24" height="16" viewBox="0 0 44 30" aria-hidden="true">' +
+        '<ellipse cx="22" cy="22" rx="20" ry="7" fill="#050505"/>' +
+        '<rect x="2" y="8" width="40" height="14" fill="#141414"/>' +
+        '<ellipse cx="22" cy="8" rx="20" ry="7" fill="#2e2e2e"/>' +
+        '<ellipse cx="22" cy="8" rx="20" ry="7" fill="none" stroke="#000" stroke-width="1"/>' +
+        '</svg></span></h1>' +
         '<div class="tagline">Goalie Scorekeeper</div>' +
       '</div>' +
       '<div class="menu">' +
