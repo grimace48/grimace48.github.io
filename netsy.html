@@ -319,33 +319,8 @@
     return (
       '<svg id="rink-svg" class="rink-svg' + (state.activeAction === "goal" || state.activeAction === "save" || state.activeAction === "miss" ? " clickable" : "") + '" viewBox="0 0 400 320">' +
         '<path d="M 130 260 A 90 90 0 0 1 270 260 Z" fill="#3a6ea8" opacity="0.25" />' +
-        '<img src ="./images/goalie.jpg" width="220" height="140" />' +
-        gridLines() +
-        '<rect x="82" y="34" width="10" height="226" fill="#f0555c" />' +
-        '<rect x="308" y="34" width="10" height="226" fill="#f0555c" />' +
-        '<rect x="82" y="34" width="236" height="10" fill="#f0555c" />' +
-        '<line x1="60" y1="260" x2="340" y2="260" stroke="#d0262c" stroke-width="3" opacity="0.85" />' +
         '<g>' +
-          '<rect x="168" y="252" width="26" height="10" rx="2" fill="#0d1117" />' +
-          '<rect x="206" y="252" width="26" height="10" rx="2" fill="#0d1117" />' +
-          '<rect x="158" y="178" width="42" height="80" rx="8" fill="#eef2f5" stroke="#2f6da3" stroke-width="3" />' +
-          '<rect x="200" y="178" width="42" height="80" rx="8" fill="#eef2f5" stroke="#2f6da3" stroke-width="3" />' +
-          '<line x1="100" y1="132" x2="199" y2="247" stroke="#0d1117" stroke-width="10" stroke-linecap="round" />' +
-          '<line x1="100" y1="132" x2="199" y2="247" stroke="#f4f6f8" stroke-width="7" stroke-linecap="round" />' +
-          '<rect x="178" y="244" width="44" height="10" rx="3" fill="#f4f6f8" stroke="#0d1117" stroke-width="1.5" />' +
-          '<rect x="163" y="160" width="74" height="34" rx="10" fill="#2f6da3" />' +
-          '<rect x="150" y="98" width="100" height="68" rx="14" fill="#2f6da3" />' +
-          '<rect x="192" y="98" width="16" height="68" fill="#f0555c" opacity="0.9" />' +
-          '<rect x="112" y="108" width="38" height="20" rx="9" fill="#2f6da3" transform="rotate(-18 131 118)" />' +
-          '<rect x="90" y="122" width="26" height="34" rx="4" fill="#0d1117" stroke="#3a4451" stroke-width="1" />' +
-          '<rect x="255" y="95" width="42" height="20" rx="9" fill="#2f6da3" transform="rotate(-45 255 105)" />' +
-          '<ellipse cx="285" cy="75" rx="19" ry="16" fill="#c79a5b" stroke="#0d1117" stroke-width="2" />' +
-          '<rect x="190" y="78" width="20" height="18" fill="#c79a5b" />' +
-          '<circle cx="200" cy="66" r="26" fill="#2f6da3" />' +
-          '<path d="M 178 66 Q 200 90 222 66" fill="none" stroke="#0d1117" stroke-width="2" />' +
-          '<line x1="182" y1="60" x2="218" y2="60" stroke="#c7d2d8" stroke-width="2" />' +
-          '<line x1="182" y1="68" x2="218" y2="68" stroke="#c7d2d8" stroke-width="2" />' +
-          '<line x1="182" y1="76" x2="218" y2="76" stroke="#c7d2d8" stroke-width="2" />' +
+          '<img src ="./images/goalie.jpg" />' +
         '</g>' +
         markers() +
       '</svg>'
