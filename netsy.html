@@ -39,7 +39,13 @@
   }
   .header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
   .header h1 { font-size: 34px; margin: 0; color: var(--ink); line-height: 1; }
-  .header .puck { color: var(--red); }
+  .header .puck {
+    display: inline-flex;
+    align-items: flex-end;
+    margin-left: 3px;
+    margin-bottom: 3px;
+  }
+  .puck-icon { display: block; }
   .info-toggle {
     font-size: 12px; color: var(--rink-blue); background: none; border: none;
     font-weight: 600; cursor: pointer; padding: 4px;
@@ -459,7 +465,12 @@
 
     return (
       '<div class="header">' +
-        '<h1 class="display">Netsy<span class="puck">.</span></h1>' +
+        '<h1 class="display">Netsy<span class="puck"><svg class="puck-icon" width="9" height="6" viewBox="0 0 44 30" aria-hidden="true">' +
+          '<ellipse cx="22" cy="22" rx="20" ry="7" fill="#f0555c"/>' +
+          '<rect x="2" y="8" width="40" height="14" fill="#f0555c"/>' +
+          '<ellipse cx="22" cy="8" rx="20" ry="7" fill="#f0555c"/>' +
+          '<ellipse cx="22" cy="8" rx="20" ry="7" fill="none" stroke="#000" stroke-width="1"/>' +
+        '</svg></span></h1>' +
         '<button class="info-toggle" id="info-toggle">' + (state.infoOpen ? "HIDE INFO" : "GAME INFO") + '</button>' +
       '</div>' +
       infoPanel +

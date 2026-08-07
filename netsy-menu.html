@@ -141,6 +141,9 @@
     width: 100%; border: none; border-radius: 8px; padding: 12px 0; font-size: 14px;
     font-weight: 700; cursor: pointer; font-family: inherit; background: var(--rink-blue); color: white;
   }
+  a {
+    color: #f0555c; /* Hex code for orange */
+  }
 </style>
 </head>
 <body>
@@ -210,6 +213,7 @@
             '<div class="modal-icon">' + lockIconSvg.replace('width="15" height="15"', 'width="20" height="20"') + '</div>' +
             '<h2 class="display">' + feature + ' is a Pro feature</h2>' +
             '<p>' + desc + '</p>' +
+            '<p> This feature is not released yet. Coming soon. </p>' +
             '<div class="modal-actions"><button id="modal-ok">Got it</button></div>' +
           '</div>' +
         '</div>'
@@ -230,9 +234,10 @@
             '</ul>' +
             '<p>Dedicated to: Max</p>' +
             '<p>Lead developer: grim</p>' +
+            '<div class="about-version"></div>' +
             '<p> <a href="http://paypal.me/GrimArcades">Support This Project</a> - I hate being bombarded with ads, so my goal is to never embed ads in my projects. If you enjoy this game, please consider making a donation to show your gratitude!</p>' +
-            '<p>Privacy Policy: 8/7/2026 This app does not collect, store, or transmit any personal information. Game data is stored only on your device and never shared.</p>' +
-            '<div class="about-version">Netsy v1.0 &mdash; Free Edition</div>' +
+            '<p>Privacy Policy: (updated 8/7/2026) This app does not collect, store, or transmit any personal information. Game data is stored only on your device and never shared.</p>' +
+
             '<div class="modal-actions"><button id="modal-ok">Close</button></div>' +
           '</div>' +
         '</div>'
@@ -255,10 +260,10 @@
     return (
       '<div class="logo-wrap">' +
         rinkIconSvg +
-        '<h1 class="title display">Netsy<span class="puck"><svg class="puck-icon" width="24" height="16" viewBox="0 0 44 30" aria-hidden="true">' +
-        '<ellipse cx="22" cy="22" rx="20" ry="7" fill="#050505"/>' +
-        '<rect x="2" y="8" width="40" height="14" fill="#141414"/>' +
-        '<ellipse cx="22" cy="8" rx="20" ry="7" fill="#2e2e2e"/>' +
+        '<h1 class="title display">Netsy<span class="puck"><svg class="puck-icon" width="14" height="8" viewBox="0 0 44 30" aria-hidden="true">' +
+        '<ellipse cx="22" cy="22" rx="20" ry="7" fill="#f0555c"/>' +
+        '<rect x="2" y="8" width="40" height="14" fill="#f0555c"/>' +
+        '<ellipse cx="22" cy="8" rx="20" ry="7" fill="#f0555c"/>' +
         '<ellipse cx="22" cy="8" rx="20" ry="7" fill="none" stroke="#000" stroke-width="1"/>' +
         '</svg></span></h1>' +
         '<div class="tagline">Goalie Scorekeeper</div>' +
