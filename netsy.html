@@ -39,6 +39,8 @@
   }
   .header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 10px; }
   .header h1 { font-size: 34px; margin: 0; color: var(--ink); line-height: 1; }
+  .title-link { text-decoration: none; }
+  .title-link:active h1 { opacity: 0.75; }
   .header .puck {
     display: inline-flex;
     align-items: flex-end;
@@ -46,10 +48,13 @@
     margin-bottom: 3px;
   }
   .puck-icon { display: block; }
+  .header-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
   .info-toggle {
     font-size: 12px; color: var(--rink-blue); background: none; border: none;
-    font-weight: 600; cursor: pointer; padding: 4px;
+    font-weight: 600; cursor: pointer; padding: 4px; text-decoration: none; display: inline-block;
   }
+  .info-toggle.saved { color: var(--green); }
+  .info-toggle-row { display: flex; justify-content: flex-end; margin-bottom: 6px; }
   .info-panel {
     background: var(--panel); border: 1px solid var(--panel-border); border-radius: 10px;
     padding: 10px 12px; margin-bottom: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
@@ -176,6 +181,8 @@
   var PERIODS = ["1", "2", "3", "OT", "SO"];
   var MARKER_COLOR = { goal: "#f0555c", save: "#3ed191", miss: "#7c8896" };
   var MARKER_LABEL = { goal: "G", save: "S", miss: "M" };
+  var STORAGE_KEY = "netsy_saved_games";
+  var LOAD_FLAG_KEY = "netsy_load_id";
 
   var state = {
     gameInfo: {
@@ -189,7 +196,11 @@
     teamGoals: 0,
     shots: [],
     activeAction: null,
-    draft: null
+    draft: null,
+    currentGameId: null,
+    saveFlash: false,
+    saveError: false,
+    newGameFlash: false
   };
 
   function uid() {
@@ -217,7 +228,122 @@
       .replace(/"/g, "&quot;");
   }
 
+  // ---------- saved-game storage ----------
+
+  function loadSavedGames() {
+    try {
+      var raw = window.localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function persistSavedGames(games) {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(games));
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  function buildGameRecord(id) {
+    return {
+      id: id,
+      savedAt: new Date().toISOString(),
+      gameInfo: {
+        date: state.gameInfo.date,
+        location: state.gameInfo.location,
+        goalie: state.gameInfo.goalie,
+        teamName: state.gameInfo.teamName,
+        opponentName: state.gameInfo.opponentName
+      },
+      teamGoals: state.teamGoals,
+      shots: state.shots.map(function (s) {
+        var copy = {};
+        for (var k in s) copy[k] = s[k];
+        return copy;
+      })
+    };
+  }
+
+  function saveGame() {
+    var games = loadSavedGames();
+    var id = state.currentGameId;
+    if (!id) {
+      id = games.reduce(function (max, g) { return Math.max(max, g.id); }, 0) + 1;
+    }
+    var record = buildGameRecord(id);
+    var idx = games.findIndex(function (g) { return g.id === id; });
+    if (idx >= 0) games[idx] = record; else games.push(record);
+
+    var ok = persistSavedGames(games);
+    state.currentGameId = id;
+    state.saveFlash = ok;
+    state.saveError = !ok;
+    render();
+    setTimeout(function () {
+      state.saveFlash = false;
+      state.saveError = false;
+      render();
+    }, 1800);
+  }
+
+  function loadGameById(id) {
+    var games = loadSavedGames();
+    var game = games.find(function (g) { return g.id === id; });
+    if (!game) return;
+    state.gameInfo = {
+      date: game.gameInfo.date || "",
+      location: game.gameInfo.location || "",
+      goalie: game.gameInfo.goalie || "",
+      teamName: game.gameInfo.teamName || "My Team",
+      opponentName: game.gameInfo.opponentName || "Opponent"
+    };
+    state.teamGoals = game.teamGoals || 0;
+    state.shots = (game.shots || []).map(function (s) {
+      var copy = {};
+      for (var k in s) copy[k] = s[k];
+      return copy;
+    });
+    state.currentGameId = game.id;
+  }
+
+  function checkForPendingLoad() {
+    try {
+      var raw = window.localStorage.getItem(LOAD_FLAG_KEY);
+      if (!raw) return;
+      window.localStorage.removeItem(LOAD_FLAG_KEY);
+      var id = parseInt(raw, 10);
+      if (!isNaN(id)) loadGameById(id);
+    } catch (e) {}
+  }
+
+  function newGame() {
+    var hasProgress = state.shots.length > 0 || state.teamGoals > 0;
+    if (hasProgress) {
+      var ok = window.confirm("Start a new game? The score and shot log will be cleared. Team names and goalie will carry over.");
+      if (!ok) return;
+    }
+    state.gameInfo.date = new Date().toISOString().slice(0, 10);
+    state.teamGoals = 0;
+    state.shots = [];
+    state.activeAction = null;
+    state.draft = null;
+    state.currentGameId = null;
+    state.saveFlash = false;
+    state.saveError = false;
+    state.newGameFlash = true;
+    render();
+    setTimeout(function () {
+      state.newGameFlash = false;
+      render();
+    }, 1800);
+  }
+
   // ---------- state mutators ----------
+
 
   function updateGameInfo(field, value) {
     state.gameInfo[field] = value;
@@ -463,17 +589,26 @@
           );
         }).join("");
 
+    var saveLabel = state.saveFlash ? "SAVED \u2713" : (state.saveError ? "SAVE FAILED" : "SAVE GAME");
     return (
       '<div class="header">' +
-        '<h1 class="display">Netsy<span class="puck"><svg class="puck-icon" width="9" height="6" viewBox="0 0 44 30" aria-hidden="true">' +
-          '<ellipse cx="22" cy="22" rx="20" ry="7" fill="#f0555c"/>' +
-          '<rect x="2" y="8" width="40" height="14" fill="#f0555c"/>' +
-          '<ellipse cx="22" cy="8" rx="20" ry="7" fill="#f0555c"/>' +
-          '<ellipse cx="22" cy="8" rx="20" ry="7" fill="none" stroke="#000" stroke-width="1"/>' +
-        '</svg></span></h1>' +
-        '<button class="info-toggle" id="info-toggle">' + (state.infoOpen ? "HIDE INFO" : "GAME INFO") + '</button>' +
+        '<a class="title-link" href="netsy-menu.html">' +
+          '<h1 class="display">Netsy<span class="puck"><svg class="puck-icon" width="9" height="6" viewBox="0 0 44 30" aria-hidden="true">' +
+            '<ellipse cx="22" cy="22" rx="20" ry="7" fill="#f0555c"/>' +
+            '<rect x="2" y="8" width="40" height="14" fill="#f0555c"/>' +
+            '<ellipse cx="22" cy="8" rx="20" ry="7" fill="#f0555c"/>' +
+            '<ellipse cx="22" cy="8" rx="20" ry="7" fill="none" stroke="#000" stroke-width="1"/>' +
+          '</svg></span></h1>' +
+        '</a>' +
+        '<div class="header-actions">' +
+          '<button class="info-toggle' + (state.newGameFlash ? " saved" : "") + '" id="new-game-btn">' + (state.newGameFlash ? "NEW GAME \u2713" : "NEW GAME") + '</button>' +
+          '<button class="info-toggle' + (state.saveFlash ? " saved" : "") + '" id="save-game-btn">' + saveLabel + '</button>' +
+        '</div>' +
       '</div>' +
       infoPanel +
+      '<div class="info-toggle-row">' +
+        '<button class="info-toggle" id="info-toggle">' + (state.infoOpen ? "HIDE INFO" : "GAME INFO") + '</button>' +
+      '</div>' +
       '<div class="scoreboard">' +
         '<div class="sb-team">' +
           '<div class="name display">' + escapeHtml(gi.teamName || "My Team") + '</div>' +
@@ -520,6 +655,12 @@
     var infoToggle = document.getElementById("info-toggle");
     if (infoToggle) infoToggle.onclick = toggleInfo;
 
+    var saveGameBtn = document.getElementById("save-game-btn");
+    if (saveGameBtn) saveGameBtn.onclick = saveGame;
+
+    var newGameBtn = document.getElementById("new-game-btn");
+    if (newGameBtn) newGameBtn.onclick = newGame;
+
     var fieldMap = { "gi-date": "date", "gi-location": "location", "gi-goalie": "goalie", "gi-team": "teamName", "gi-opponent": "opponentName" };
     Object.keys(fieldMap).forEach(function (id) {
       var el = document.getElementById(id);
@@ -536,6 +677,11 @@
 
     document.querySelectorAll(".shot-marker").forEach(function (el) {
       el.addEventListener("click", function (e) {
+        if (state.activeAction === "goal" || state.activeAction === "save" || state.activeAction === "miss") {
+          // actively placing a new shot: let the click fall through to the graphic
+          // so a new shot can be dropped even on top of an existing marker
+          return;
+        }
         e.stopPropagation();
         openEdit(el.getAttribute("data-id"));
       });
@@ -606,6 +752,7 @@
     }
   }
 
+  checkForPendingLoad();
   render();
 })();
 </script>
