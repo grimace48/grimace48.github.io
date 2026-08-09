@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Netsy — Goalie Stat Tracker</title>
+<title>Netsy Goalie Scorekeeper</title>
 <style>
   :root {
     --bg: #0c1117;
@@ -169,6 +169,16 @@
   .btn-cancel { background: #232d3a; color: var(--ink-dim); }
   .btn-save { background: var(--rink-blue); color: white; }
   .btn-delete { background: #3a2126; color: var(--red); flex: 0 0 44px; }
+  .footer {
+  text-align: center;
+  align-items: center;
+  font-size: 11px;
+  color: var(--ink-dim);
+  padding: 6px;
+  width: 400px;
+  border-top: 1px solid var(--rink-blue);
+  }
+  a { color: var(--rink-blue); text-decoration: none; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -601,8 +611,7 @@
           '</svg></span></h1>' +
         '</a>' +
         '<div class="header-actions">' +
-          '<button class="info-toggle' + (state.newGameFlash ? " saved" : "") + '" id="new-game-btn">' + (state.newGameFlash ? "NEW GAME \u2713" : "NEW GAME") + '</button>' +
-          '<button class="info-toggle' + (state.saveFlash ? " saved" : "") + '" id="save-game-btn">' + saveLabel + '</button>' +
+          '<button class="info-toggle' + (state.newGameFlash ? " saved" : "") + '" id="new-game-btn">' + (state.newGameFlash ? "NEW GAME" : "RESET") + '</button>' +
         '</div>' +
       '</div>' +
       infoPanel +
@@ -756,5 +765,12 @@
   render();
 })();
 </script>
+<center>
+<div class="footer">Netsy Goalie Scorekeeper v1.0 - Web Free Version <BR>      
+  <div> Leadwing © 2026 All rights reserved <br>
+      <a href='mailto:GrimaceArcade@gmail.com' class="underline">Contact Us</a><br>
+  </div>
+</div>
+</center>
 </body>
 </html>
