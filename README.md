@@ -6,4 +6,4 @@ https://grimace48.github.io/juno.html
 
 https://grimace48.github.io/juno-of-kjlovania.html
 
-https://grimace48.github.io/netsy-menu.html
+https://grimace48.github.io/netsy.html
